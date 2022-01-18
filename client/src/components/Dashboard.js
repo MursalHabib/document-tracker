@@ -458,6 +458,15 @@ const Dashboard = (props) => {
             >
               Create Document
             </Button>
+            <Button
+              onClick={() => setDialogOpen(false)}
+              color="inherit"
+              // fullWidth
+              variant="text"
+              sx={{ mt: 3, mb: 2, ml: 2 }}
+            >
+              Cancel
+            </Button>
           </Box>
         </Dialog>
         <Dialog
@@ -506,6 +515,16 @@ const Dashboard = (props) => {
                 value={"Posisi Dokumen: \n" + submitted.position}
                 size={200}
               />
+            </Grid>
+            <Grid sx={{ textAlign: "center" }}>
+              <Button
+                onClick={() => setDialogSuccessOpen(false)}
+                color="inherit"
+                // fullWidth
+                variant="text"
+              >
+                Close
+              </Button>
             </Grid>
           </DialogContent>
         </Dialog>

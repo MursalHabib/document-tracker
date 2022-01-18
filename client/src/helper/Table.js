@@ -464,6 +464,15 @@ export default function EnhancedTable({ testRefresh }) {
           <Button type="submit" variant="outlined" sx={{ mt: 3, mb: 2 }}>
             Update Document
           </Button>
+          <Button
+            onClick={() => setDialogOpen(false)}
+            color="inherit"
+            // fullWidth
+            variant="text"
+            sx={{ mt: 3, mb: 2, ml: 2 }}
+          >
+            Cancel
+          </Button>
         </Box>
       </Dialog>
       <Dialog
@@ -507,6 +516,16 @@ export default function EnhancedTable({ testRefresh }) {
           </Grid>
           <Grid sx={{ textAlign: "center" }}>
             <QRCode value={"Posisi Dokumen: \n" + dataDetail.position} />
+          </Grid>
+          <Grid sx={{ textAlign: "center" }}>
+            <Button
+              onClick={() => setDialogQROpen(false)}
+              color="inherit"
+              // fullWidth
+              variant="text"
+            >
+              Close
+            </Button>
           </Grid>
         </Box>
       </Dialog>
