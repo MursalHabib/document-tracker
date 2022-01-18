@@ -45,11 +45,7 @@ function App() {
           exact
           path="/login"
           element={
-            !isAuthenticated ? (
-              <Login setAuth={setAuth} />
-            ) : (
-              <Navigate to="/dashboard" />
-            )
+            !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/" />
           }
         />
         <Route
@@ -59,13 +55,13 @@ function App() {
             !isAuthenticated ? (
               <Register setAuth={setAuth} />
             ) : (
-              <Navigate to="/dashboard" />
+              <Navigate to="/" />
             )
           }
         />
         <Route
           exact
-          path="/dashboard"
+          path="/"
           element={
             isAuthenticated ? (
               <Dashboard setAuth={setAuth} />

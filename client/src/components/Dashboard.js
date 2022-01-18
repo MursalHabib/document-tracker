@@ -24,6 +24,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Grid,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -31,15 +36,16 @@ import MailIcon from "@mui/icons-material/Mail";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
-import Table from "../helper/Table";
+import TableDocs from "../helper/Table";
 import axios from "axios";
-import QRCode from "qrcode.react";
+import QRCode from "react-qr-code";
 
 const Dashboard = (props) => {
   const drawerWidth = 240;
   const { window, setAuth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogSuccessOpen, setDialogSuccessOpen] = useState(false);
   const [jenis, setJenis] = useState("");
   const [inputData, setInputData] = useState({
     title: "",
@@ -48,6 +54,7 @@ const Dashboard = (props) => {
     position: "",
     info: "",
   });
+  const [submitted, setSubmitted] = useState({});
 
   const { title, type, pic, position, info } = inputData;
 
@@ -131,6 +138,8 @@ const Dashboard = (props) => {
       );
       setDialogOpen(false);
       setRefresh((old) => old + 1);
+      setSubmitted(body);
+      setDialogSuccessOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -336,6 +345,12 @@ const Dashboard = (props) => {
                   Executive General Manager
                 </MenuItem>
                 <MenuItem value={"Senior Manager"}>Senior Manager</MenuItem>
+                <MenuItem value={"Manager MS Procurement"}>
+                  Manager MS Procurement
+                </MenuItem>
+                <MenuItem value={"Manager Non MS Procurement"}>
+                  Manager Non MS Procurement
+                </MenuItem>
               </Select>
             </FormControl>
             <TextField
@@ -359,7 +374,57 @@ const Dashboard = (props) => {
             </Button>
           </Box>
         </Dialog>
-        <Table testRefresh={refresh} />
+        <Dialog
+          fullWidth
+          open={dialogSuccessOpen}
+          onClose={() => setDialogSuccessOpen(false)}
+          sx={{ marginTop: -30 }}
+        >
+          <DialogTitle sx={{ textAlign: "center" }}>
+            Document Added Successfully!
+          </DialogTitle>
+          <DialogContent>
+            <Grid
+              sx={{
+                border: "1px solid grey",
+                width: 450,
+                marginBlock: 5,
+              }}
+            >
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell sx={{ margin: 0 }}>Judul Dokumen</TableCell>
+                    <TableCell>{submitted.title}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Jenis Dokumen</TableCell>
+                    <TableCell>{submitted.type}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>PIC</TableCell>
+                    <TableCell>{submitted.pic}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Posisi Dokumen</TableCell>
+                    <TableCell>{submitted.position}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Keterangan</TableCell>
+                    <TableCell>{submitted.info}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Grid>
+            <Grid sx={{ textAlign: "center" }}>
+              <QRCode
+                value={"Posisi Dokumen: \n" + submitted.position}
+                size={200}
+              />
+            </Grid>
+          </DialogContent>
+        </Dialog>
+        <TableDocs testRefresh={refresh} />
       </Box>
     </Box>
   );
