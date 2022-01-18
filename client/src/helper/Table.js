@@ -173,7 +173,7 @@ const EnhancedTableToolbar = (props) => {
         id="tableTitle"
         component="div"
       >
-        Semua Dokumen
+        List Dokumen
       </Typography>
     </Toolbar>
   );
@@ -188,7 +188,7 @@ export default function EnhancedTable({ testRefresh }) {
   const [orderBy, setOrderBy] = useState("calories");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [tableContent, setTableContent] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogQROpen, setDialogQROpen] = useState(false);
@@ -367,7 +367,7 @@ export default function EnhancedTable({ testRefresh }) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 25, 50, 100]}
+          rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
           count={tableContent.length}
           rowsPerPage={rowsPerPage}
@@ -376,12 +376,7 @@ export default function EnhancedTable({ testRefresh }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <Dialog
-        fullWidth
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        sx={{ marginTop: -30 }}
-      >
+      <Dialog fullWidth open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>Edit Document</DialogTitle>
         <Box component="form" padding={2} onSubmit={onSubmit}>
           <TextField
@@ -475,7 +470,6 @@ export default function EnhancedTable({ testRefresh }) {
         fullWidth
         open={dialogQROpen}
         onClose={() => setDialogQROpen(false)}
-        sx={{ marginTop: -30 }}
       >
         <DialogTitle>Detail & QR Document</DialogTitle>
         <Box padding={2}>

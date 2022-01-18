@@ -29,7 +29,14 @@ import {
   TableRow,
   TableCell,
   Grid,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  OutlinedInput,
+  InputAdornment,
+  useMediaQuery,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { styled, alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import MailIcon from "@mui/icons-material/Mail";
@@ -46,7 +53,7 @@ const Dashboard = (props) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogSuccessOpen, setDialogSuccessOpen] = useState(false);
-  const [jenis, setJenis] = useState("");
+  const [onRadio, setOnRadio] = useState("");
   const [inputData, setInputData] = useState({
     title: "",
     type: "",
@@ -55,12 +62,9 @@ const Dashboard = (props) => {
     info: "",
   });
   const [submitted, setSubmitted] = useState({});
+  const theme = useTheme();
 
   const { title, type, pic, position, info } = inputData;
-
-  const handleChangeJenis = (event) => {
-    setJenis(event.target.value);
-  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -177,6 +181,8 @@ const Dashboard = (props) => {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -198,14 +204,7 @@ const Dashboard = (props) => {
           >
             <MenuIcon />
           </IconButton>
-          {/* <Typography
-            variant="h6"
-            sx={{ color: "black" }}
-            noWrap
-            component="div"
-          >
-            Document Tracker
-          </Typography> */}
+
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -222,14 +221,13 @@ const Dashboard = (props) => {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: "block", sm: "none" },
@@ -255,6 +253,7 @@ const Dashboard = (props) => {
           {drawer}
         </Drawer>
       </Box>
+
       <Box
         component="main"
         sx={{
@@ -272,15 +271,15 @@ const Dashboard = (props) => {
           Add Document
         </Button>
         <Dialog
+          fullScreen={fullScreen}
           fullWidth
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
-          sx={{ marginTop: -30 }}
         >
           <DialogTitle>Add New Document</DialogTitle>
           <Box component="form" padding={2} onSubmit={onSubmit}>
             <TextField
-              margin="normal"
+              margin="dense"
               id="name"
               label="Judul Dokumen"
               type="text"
@@ -290,7 +289,7 @@ const Dashboard = (props) => {
               value={title}
               onChange={onChange}
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label">
                 Jenis Dokumen
               </InputLabel>
@@ -314,6 +313,92 @@ const Dashboard = (props) => {
                 <MenuItem value={"Lainnya"}>Lainnya</MenuItem>
               </Select>
             </FormControl>
+            <RadioGroup
+              onChange={(e) => setOnRadio(e.target.value)}
+              sx={{ display: type === "BAPP" ? "inline" : "none" }}
+            >
+              <FormControlLabel
+                value="Softcopy"
+                control={<Radio />}
+                label="Softcopy"
+              />
+              <FormControlLabel
+                value="Hardcopy"
+                value="Hardcopy"
+                control={<Radio />}
+                label="Hardcopy"
+              />
+            </RadioGroup>
+            <FormControl
+              fullWidth
+              sx={{
+                display:
+                  onRadio === "Softcopy" && type === "BAPP"
+                    ? "inline-block"
+                    : "none",
+              }}
+            >
+              <OutlinedInput
+                type="file"
+                size="small"
+                placeholder="Please enter text"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Button variant="contained" color="inherit" size="small">
+                      Upload
+                    </Button>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            <FormControl
+              fullWidth
+              size="small"
+              variant="outlined"
+              sx={{
+                display:
+                  onRadio === "Hardcopy" && type === "BAPP" ? "flex" : "none",
+              }}
+            >
+              <InputLabel htmlFor="outlined-adornment-password">
+                Cari Dokumen Softcopy
+              </InputLabel>
+              <OutlinedInput
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Cari Dokumen Softcopy"
+              />
+            </FormControl>
+            <FormControl
+              margin="dense"
+              fullWidth
+              sx={{
+                display:
+                  onRadio === "Hardcopy" && type === "BAPP"
+                    ? "inline-block"
+                    : "none",
+              }}
+            >
+              <Typography variant="h7">Attach File Hardcopy</Typography>
+              <OutlinedInput
+                type="file"
+                size="small"
+                placeholder="Please enter text"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <Button variant="contained" color="inherit" size="small">
+                      Upload
+                    </Button>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+
             <FormControl fullWidth margin="normal">
               <InputLabel id="demo-simple-select-label">PIC Dokumen</InputLabel>
               <Select
@@ -328,7 +413,7 @@ const Dashboard = (props) => {
                 <MenuItem value={"Rudy"}>Rudy</MenuItem>
               </Select>
             </FormControl>
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label">
                 Posisi Dokumen
               </InputLabel>
@@ -353,7 +438,9 @@ const Dashboard = (props) => {
               </Select>
             </FormControl>
             <TextField
-              margin="normal"
+              multiline
+              rows={3}
+              margin="dense"
               id="name"
               label="Keterangan"
               type="text"
@@ -377,7 +464,6 @@ const Dashboard = (props) => {
           fullWidth
           open={dialogSuccessOpen}
           onClose={() => setDialogSuccessOpen(false)}
-          sx={{ marginTop: -30 }}
         >
           <DialogTitle sx={{ textAlign: "center" }}>
             Document Added Successfully!
