@@ -25,9 +25,12 @@ import {
   Typography,
   Paper,
   IconButton,
+  Chip,
+  Grid,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import QRCode from "react-qr-code";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -188,6 +191,7 @@ export default function EnhancedTable({ testRefresh }) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [tableContent, setTableContent] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogQROpen, setDialogQROpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
 
@@ -217,8 +221,13 @@ export default function EnhancedTable({ testRefresh }) {
     }
   };
 
-  const eventRow = (i) => {
+  const handleEdit = (i) => {
     setDialogOpen(true);
+    setDataDetail(i);
+  };
+
+  const handleViewQR = (i) => {
+    setDialogQROpen(true);
     setDataDetail(i);
   };
 
@@ -308,16 +317,36 @@ export default function EnhancedTable({ testRefresh }) {
                       <TableCell>{row.title}</TableCell>
                       <TableCell align="right">{row.type}</TableCell>
                       <TableCell align="right">{row.pic}</TableCell>
-                      <TableCell align="right">{row.position}</TableCell>
+                      <TableCell align="right">
+                        <Chip
+                          label={row.position}
+                          color={
+                            row.position === "Executive General Manager"
+                              ? "success"
+                              : row.position === "Senior Manager"
+                              ? "primary"
+                              : "default"
+                          }
+                          variant={
+                            row.position === "Executive General Manager"
+                              ? "filled"
+                              : "outlined"
+                          }
+                        />
+                      </TableCell>
                       <TableCell align="right">{row.info}</TableCell>
                       <TableCell align="right">
-                        <IconButton color="secondary" aria-label="qr code">
+                        <IconButton
+                          color="secondary"
+                          aria-label="qr code"
+                          onClick={() => handleViewQR(row)}
+                        >
                           <QrCodeIcon />
                         </IconButton>
                         <IconButton
                           color="primary"
                           aria-label="edit"
-                          onClick={() => eventRow(row)}
+                          onClick={() => handleEdit(row)}
                         >
                           <EditIcon />
                         </IconButton>
@@ -440,6 +469,51 @@ export default function EnhancedTable({ testRefresh }) {
           <Button type="submit" variant="outlined" sx={{ mt: 3, mb: 2 }}>
             Update Document
           </Button>
+        </Box>
+      </Dialog>
+      <Dialog
+        fullWidth
+        open={dialogQROpen}
+        onClose={() => setDialogQROpen(false)}
+        sx={{ marginTop: -30 }}
+      >
+        <DialogTitle>Detail & QR Document</DialogTitle>
+        <Box padding={2}>
+          <Grid
+            sx={{
+              border: "1px solid grey",
+              width: 450,
+              marginBlock: 2,
+            }}
+          >
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell sx={{ margin: 0 }}>Judul Dokumen</TableCell>
+                  <TableCell>{dataDetail.title}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Jenis Dokumen</TableCell>
+                  <TableCell>{dataDetail.type}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>PIC</TableCell>
+                  <TableCell>{dataDetail.pic}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Posisi Dokumen</TableCell>
+                  <TableCell>{dataDetail.position}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Keterangan</TableCell>
+                  <TableCell>{dataDetail.info}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Grid>
+          <Grid sx={{ textAlign: "center" }}>
+            <QRCode value={"Posisi Dokumen: \n" + dataDetail.position} />
+          </Grid>
         </Box>
       </Dialog>
     </Box>

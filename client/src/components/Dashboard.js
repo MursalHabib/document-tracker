@@ -126,7 +126,6 @@ const Dashboard = (props) => {
     e.preventDefault();
     try {
       const body = { title, type, pic, position, info };
-      console.log("APA ISI BODY:  ", body);
       const response = await axios.post(
         "http://localhost:5000/api/v1/docs/create",
         body,
