@@ -27,10 +27,12 @@ import {
   IconButton,
   Chip,
   Grid,
+  useMediaQuery,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import QRCode from "react-qr-code";
+import { useTheme } from "@mui/material/styles";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -194,6 +196,9 @@ export default function EnhancedTable({ testRefresh }) {
   const [dialogQROpen, setDialogQROpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
+  const theme = useTheme();
+
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const onChange = (e) => {
     setDataDetail({ ...dataDetail, [e.target.name]: e.target.value });
@@ -515,7 +520,8 @@ export default function EnhancedTable({ testRefresh }) {
             </Table>
           </Grid>
           <Grid sx={{ textAlign: "center" }}>
-            <QRCode value={"Posisi Dokumen: \n" + dataDetail.position} />
+            <QRCode value={"http://localhost:3000/update/" + dataDetail.id} />
+            {/* value={"Posisi Dokumen: \n" + dataDetail.position} */}
           </Grid>
           <Grid sx={{ textAlign: "center" }}>
             <Button

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import {
   Typography,
   TextField,
@@ -11,12 +11,18 @@ import {
   Grid,
 } from "@mui/material";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const Login = ({ setAuth }) => {
+  const { state } = useLocation();
+  // const { id } = state;
+
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
+
+  const { email, password } = inputs;
 
   const onChange = (e) =>
     setInputs({ ...inputs, [e.target.name]: e.target.value });
@@ -25,13 +31,27 @@ const Login = ({ setAuth }) => {
     e.preventDefault();
     try {
       const body = { email, password };
+      const position = email === "000000" ? "Senior Manager" : null;
       const response = await axios.post(
         "http://localhost:5000/api/v1/auth/login",
         body
       );
       const { token } = response.data;
+
       if (token) {
         localStorage.setItem("token", token);
+        if (state) {
+          const update = await axios.put(
+            `http://localhost:5000/api/v1/docs/update/${state.id}`,
+            { position },
+            {
+              headers: {
+                token: localStorage.token,
+              },
+            }
+          );
+          console.log("ISI UPDATE DOKUMEN: ", update);
+        }
         setAuth(true);
         console.log("SUCCESSFULLY LOGIN...");
       } else {
@@ -39,11 +59,10 @@ const Login = ({ setAuth }) => {
         console.log("LOGIN FAILED");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const { email, password } = inputs;
   return (
     <Container component="main" maxWidth="xs">
       <Card
@@ -62,7 +81,7 @@ const Login = ({ setAuth }) => {
             margin="normal"
             fullWidth
             id="email"
-            label="email"
+            label="NIK"
             name="email"
             autoComplete="email"
             autoFocus

@@ -184,7 +184,7 @@ const Dashboard = (props) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex" }} className="m-0 p-0">
       <CssBaseline />
       <AppBar
         position="fixed"

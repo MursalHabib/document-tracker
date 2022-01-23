@@ -5,6 +5,7 @@ import { Typography } from "@mui/material";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
+import UpdateDoc from "./helper/UpdateDocument";
 import { Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
 
@@ -69,6 +70,11 @@ function App() {
               <Navigate to="/login" />
             )
           }
+        />
+        <Route
+          exact
+          path="/update/:id"
+          element={<UpdateDoc setAuth={setAuth} />}
         />
       </Routes>
     </div>

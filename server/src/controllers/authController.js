@@ -23,7 +23,7 @@ module.exports = {
         password: bcryptPassword,
       });
 
-      const token = jwtGen(newUser.dataValues.id);
+      const token = jwtGen(newUser.dataValues.id, newUser.dataValues.email);
       return res.json({ message: "USER REGISTERED...", token });
     } catch (error) {
       res.status(500).json({ message: "SERVER ERROR" });
@@ -43,7 +43,7 @@ module.exports = {
       if (!validPassword) {
         return res.status(403).json({ message: "INVALID PASSWORD..." });
       }
-      const token = jwtGen(checkUser.dataValues.id);
+      const token = jwtGen(checkUser.dataValues.id, checkUser.dataValues.email);
       return res.json({ message: "LOGGED IN...", token });
     } catch (error) {
       res.status(500).json({ message: "SERVER ERROR :(" });
@@ -53,7 +53,7 @@ module.exports = {
     try {
       res.json(true);
     } catch (err) {
-      console.error(err.message);
+      // console.log(err.message);
       res.status(500).send("Server error");
     }
   },
