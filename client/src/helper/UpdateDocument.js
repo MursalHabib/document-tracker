@@ -1,21 +1,35 @@
 import React, { useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const UpdateDocument = ({ setAuth }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const docUpdate = () => {
+  const docUpdate = async () => {
     var token = localStorage.token;
     var decoded = jwt_decode(token);
 
     console.log(decoded);
-    localStorage.removeItem("token");
-    navigate("/login", { state: { id: id } });
-    console.log(id);
-    setAuth(false);
+    // localStorage.removeItem("token");
+    if (!localStorage.token) {
+      navigate("/login", { state: { id: id } });
+      console.log(id);
+    }
+    const position = decoded.user.email === "000000" ? "Senior Manager" : null;
+    const update = await axios.put(
+      `http://localhost:5000/api/v1/docs/update/${id}`,
+      { position },
+      {
+        headers: {
+          token: localStorage.token,
+        },
+      }
+    );
+    console.log("ISI UPDATE DOKUMEN: ", update);
+
+    navigate("/");
   };
 
   useEffect(() => {

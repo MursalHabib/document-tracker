@@ -48,7 +48,7 @@ import axios from "axios";
 import QRCode from "react-qr-code";
 
 const Dashboard = (props) => {
-  const drawerWidth = 240;
+  const drawerWidth = 200;
   const { window, setAuth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
