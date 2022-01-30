@@ -51,11 +51,27 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/l
 
 const Dashboard = (props) => {
   const drawerWidth = 240;
+  const theme = useTheme();
   const { window, setAuth } = props;
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogSuccessOpen, setDialogSuccessOpen] = useState(false);
   const [onRadio, setOnRadio] = useState("");
+  const [submitted, setSubmitted] = useState({});
+  const [refresh, setRefresh] = useState(0);
+
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfFileHardcopy, setPdfFileHardcopy] = useState(null);
+  const [pdfFileError, setPdfFileError] = useState("");
+  const [viewPdf, setViewPdf] = useState(null);
+  const [viewPdfHardcopy, setViewPdfHardcopy] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+  const [numPagesHardcopy, setNumPagesHardcopy] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumberHardcopy, setPageNumberHardcopy] = useState(1);
+  const [fileName, setFileName] = useState(null);
+
   const [inputData, setInputData] = useState({
     title: "",
     type: "",
@@ -63,8 +79,6 @@ const Dashboard = (props) => {
     position: "",
     info: "",
   });
-  const [submitted, setSubmitted] = useState({});
-  const theme = useTheme();
 
   const { title, type, pic, position, info } = inputData;
 
@@ -126,8 +140,6 @@ const Dashboard = (props) => {
   const onChange = (e) =>
     setInputData({ ...inputData, [e.target.name]: e.target.value });
 
-  const [refresh, setRefresh] = useState(0);
-
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -185,20 +197,20 @@ const Dashboard = (props) => {
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [pdfFile, setPdfFile] = useState(null);
-  const [pdfFileError, setPdfFileError] = useState("");
-  const [viewPdf, setViewPdf] = useState(null);
-  const [numPages, setNumPages] = useState(null);
-
-  console.log(numPages);
+  //Function handle PDF File
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
+  function onDocumentLoadSuccessHardcopy({ numPages }) {
+    setNumPagesHardcopy(numPages);
+  }
+
   const fileType = ["application/pdf"];
-  const handlePdfFileChange = (e) => {
+  const handleSoftcopyChange = (e) => {
     let selectedFile = e.target.files[0];
+    setFileName(selectedFile.name);
     if (selectedFile) {
       if (selectedFile && fileType.includes(selectedFile.type)) {
         let reader = new FileReader();
@@ -216,12 +228,40 @@ const Dashboard = (props) => {
     }
   };
 
-  const handlePdfFileSubmit = (e) => {
+  const handleSoftcopySubmit = (e) => {
     e.preventDefault();
     if (pdfFile !== null) {
       setViewPdf(pdfFile);
     } else {
       setViewPdf(null);
+    }
+  };
+
+  const handleHardcopyChange = (e) => {
+    let selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile && fileType.includes(selectedFile.type)) {
+        let reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onloadend = (e) => {
+          setPdfFileHardcopy(e.target.result);
+          setPdfFileError("");
+        };
+      } else {
+        setPdfFileHardcopy(null);
+        setPdfFileError("Please select valid pdf file");
+      }
+    } else {
+      console.log("select your file");
+    }
+  };
+
+  const handleHardcopySubmit = (e) => {
+    e.preventDefault();
+    if (pdfFileHardcopy !== null) {
+      setViewPdfHardcopy(pdfFileHardcopy);
+    } else {
+      setViewPdfHardcopy(null);
     }
   };
 
@@ -381,7 +421,7 @@ const Dashboard = (props) => {
               }}
             >
               <OutlinedInput
-                onChange={handlePdfFileChange}
+                onChange={handleSoftcopyChange}
                 type="file"
                 size="small"
                 placeholder="Please enter text"
@@ -392,17 +432,29 @@ const Dashboard = (props) => {
                       color="inherit"
                       size="small"
                       type="submit"
-                      onClick={handlePdfFileSubmit}
+                      onClick={handleSoftcopySubmit}
                     >
                       Upload
                     </Button>
                   </InputAdornment>
                 }
               />
-              <Document
-                file={viewPdf}
-                onLoadSuccess={onDocumentLoadSuccess}
-              ></Document>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 3,
+                }}
+              >
+                <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
+                  <Box sx={{ border: "1px solid lightgray" }}>
+                    <Page scale={0.3} pageNumber={pageNumber} />
+                  </Box>
+                  <Typography variant="subtitle2" align="center">
+                    {numPages} Halaman
+                  </Typography>
+                </Document>
+              </Box>
             </FormControl>
             <FormControl
               fullWidth
@@ -413,10 +465,27 @@ const Dashboard = (props) => {
                   onRadio === "Hardcopy" && type === "BAPP" ? "flex" : "none",
               }}
             >
-              <InputLabel htmlFor="outlined-adornment-password">
+              <Typography variant="subtitle1">Dokumen Softcopy:</Typography>
+              <Typography variant="subtitle2">{fileName}</Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  marginTop: 3,
+                }}
+              >
+                <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
+                  <Box sx={{ border: "1px solid lightgray" }}>
+                    <Page scale={0.3} pageNumber={pageNumber} />
+                  </Box>
+                  <Typography variant="subtitle2" align="center">
+                    {numPages} Halaman
+                  </Typography>
+                </Document>
+              </Box>
+              {/* <InputLabel htmlFor="outlined-adornment-password">
                 Cari Dokumen Softcopy
-              </InputLabel>
-              <OutlinedInput
+              </InputLabel> */}
+              {/* <OutlinedInput
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton>
@@ -425,32 +494,65 @@ const Dashboard = (props) => {
                   </InputAdornment>
                 }
                 label="Cari Dokumen Softcopy"
-              />
+              /> */}
             </FormControl>
-            <FormControl
-              margin="dense"
-              fullWidth
-              sx={{
-                display:
-                  onRadio === "Hardcopy" && type === "BAPP"
-                    ? "inline-block"
-                    : "none",
-              }}
-            >
-              <Typography variant="h7">Attach File Hardcopy</Typography>
-              <OutlinedInput
-                type="file"
-                size="small"
-                placeholder="Please enter text"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <Button variant="contained" color="inherit" size="small">
-                      Upload
-                    </Button>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
+            {viewPdf !== null && (
+              <FormControl
+                margin="dense"
+                fullWidth
+                sx={{
+                  display:
+                    onRadio === "Hardcopy" && type === "BAPP"
+                      ? "inline-block"
+                      : "none",
+                }}
+              >
+                <Typography variant="h7">Attach File Hardcopy</Typography>
+                <OutlinedInput
+                  onChange={handleHardcopyChange}
+                  type="file"
+                  size="small"
+                  placeholder="Please enter text"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <Button
+                        variant="contained"
+                        color="inherit"
+                        size="small"
+                        onClick={handleHardcopySubmit}
+                      >
+                        Upload
+                      </Button>
+                    </InputAdornment>
+                  }
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    marginTop: 3,
+                  }}
+                >
+                  <Document
+                    file={viewPdfHardcopy}
+                    onLoadSuccess={onDocumentLoadSuccessHardcopy}
+                  >
+                    <Box sx={{ border: "1px solid lightgray" }}>
+                      <Page scale={0.3} pageNumber={pageNumberHardcopy} />
+                    </Box>
+                    <Typography variant="subtitle2" align="center">
+                      {numPagesHardcopy} Halaman
+                    </Typography>
+                  </Document>
+                </Box>
+                {numPages !== null &&
+                  numPagesHardcopy !== null &&
+                  (numPages === numPagesHardcopy ? (
+                    <Typography>Jumlah halaman sesuai</Typography>
+                  ) : (
+                    <Typography>Jumlah halaman tidak sesuai</Typography>
+                  ))}
+              </FormControl>
+            )}
 
             <FormControl fullWidth margin="normal">
               <InputLabel id="demo-simple-select-label">PIC Dokumen</InputLabel>

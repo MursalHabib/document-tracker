@@ -76,10 +76,7 @@ function App() {
                   height: "100vh",
                 }}
               >
-                <CircularProgress size={80} />
-                <Typography variant="h4" sx={{ marginLeft: 5 }}>
-                  Loading Data...
-                </Typography>
+                <CircularProgress size={60} />
               </Box>
             ) : isAuthenticated ? (
               <Dashboard setAuth={setAuth} />
