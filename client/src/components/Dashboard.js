@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
 import {
   Drawer,
   AppBar,
@@ -46,9 +45,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import TableDocs from "../helper/Table";
 import axios from "axios";
 import QRCode from "react-qr-code";
+import { Document, Page, pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
 const Dashboard = (props) => {
-  const drawerWidth = 200;
+  const drawerWidth = 240;
   const { window, setAuth } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -183,8 +185,48 @@ const Dashboard = (props) => {
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfFileError, setPdfFileError] = useState("");
+  const [viewPdf, setViewPdf] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+
+  console.log(numPages);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  const fileType = ["application/pdf"];
+  const handlePdfFileChange = (e) => {
+    let selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile && fileType.includes(selectedFile.type)) {
+        let reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onloadend = (e) => {
+          setPdfFile(e.target.result);
+          setPdfFileError("");
+        };
+      } else {
+        setPdfFile(null);
+        setPdfFileError("Please select valid pdf file");
+      }
+    } else {
+      console.log("select your file");
+    }
+  };
+
+  const handlePdfFileSubmit = (e) => {
+    e.preventDefault();
+    if (pdfFile !== null) {
+      setViewPdf(pdfFile);
+    } else {
+      setViewPdf(null);
+    }
+  };
+
   return (
-    <Box sx={{ display: "flex" }} className="m-0 p-0">
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -339,17 +381,28 @@ const Dashboard = (props) => {
               }}
             >
               <OutlinedInput
+                onChange={handlePdfFileChange}
                 type="file"
                 size="small"
                 placeholder="Please enter text"
                 endAdornment={
                   <InputAdornment position="end">
-                    <Button variant="contained" color="inherit" size="small">
+                    <Button
+                      variant="contained"
+                      color="inherit"
+                      size="small"
+                      type="submit"
+                      onClick={handlePdfFileSubmit}
+                    >
                       Upload
                     </Button>
                   </InputAdornment>
                 }
               />
+              <Document
+                file={viewPdf}
+                onLoadSuccess={onDocumentLoadSuccess}
+              ></Document>
             </FormControl>
             <FormControl
               fullWidth

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { alpha } from "@mui/material/styles";
 import { visuallyHidden } from "@mui/utils";
@@ -33,6 +33,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
+import ReactToPrint from "react-to-print";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -197,6 +198,7 @@ export default function EnhancedTable({ testRefresh }) {
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
   const theme = useTheme();
+  const componentRef = useRef();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -489,41 +491,49 @@ export default function EnhancedTable({ testRefresh }) {
         <Box padding={2}>
           <Grid
             sx={{
-              border: "1px solid grey",
-              width: 450,
-              marginBlock: 2,
+              height: "100%",
             }}
           >
-            <Table>
-              <TableBody>
-                <TableRow>
-                  <TableCell sx={{ margin: 0 }}>Judul Dokumen</TableCell>
-                  <TableCell>{dataDetail.title}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Jenis Dokumen</TableCell>
-                  <TableCell>{dataDetail.type}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>PIC</TableCell>
-                  <TableCell>{dataDetail.pic}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Posisi Dokumen</TableCell>
-                  <TableCell>{dataDetail.position}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Keterangan</TableCell>
-                  <TableCell>{dataDetail.info}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <Box ref={componentRef} sx={{ alignItems: "center", padding: 5 }}>
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell sx={{ margin: 0 }}>Judul Dokumen</TableCell>
+                    <TableCell>{dataDetail.title}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Jenis Dokumen</TableCell>
+                    <TableCell>{dataDetail.type}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>PIC</TableCell>
+                    <TableCell>{dataDetail.pic}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Posisi Dokumen</TableCell>
+                    <TableCell>{dataDetail.position}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Keterangan</TableCell>
+                    <TableCell>{dataDetail.info}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+              <Grid sx={{ textAlign: "center", marginTop: 10 }}>
+                <QRCode
+                  value={"http://localhost:3000/update/" + dataDetail.id}
+                />
+              </Grid>
+            </Box>
           </Grid>
           <Grid sx={{ textAlign: "center" }}>
-            <QRCode value={"http://localhost:3000/update/" + dataDetail.id} />
-            {/* value={"Posisi Dokumen: \n" + dataDetail.position} */}
-          </Grid>
-          <Grid sx={{ textAlign: "center" }}>
+            <ReactToPrint
+              pageStyle={{ alignItems: "center" }}
+              documentTitle={dataDetail.title}
+              trigger={() => <Button>Print</Button>}
+              content={() => componentRef.current}
+              pageStyle="@page { size: 8.3in 11.7in }"
+            />
             <Button
               onClick={() => setDialogQROpen(false)}
               color="inherit"
