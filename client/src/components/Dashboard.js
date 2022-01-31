@@ -46,6 +46,7 @@ import TableDocs from "../helper/Table";
 import axios from "axios";
 import QRCode from "react-qr-code";
 import { Document, Page, pdfjs } from "react-pdf";
+import { toast } from "react-toastify";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -131,6 +132,14 @@ const Dashboard = (props) => {
     try {
       localStorage.removeItem("token");
       setAuth(false);
+      toast.info("Logged out successfully", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       console.log("LOGGED OUT SUCCESSFULLY...");
     } catch (error) {
       console.error(error.message);
@@ -171,7 +180,7 @@ const Dashboard = (props) => {
       </Toolbar>
       <Divider />
       <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+        {["Menu 1", "Menu 2", "Menu 3", "Menu 4"].map((text, index) => (
           <ListItem button key={text}>
             <ListItemIcon>
               {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -361,6 +370,7 @@ const Dashboard = (props) => {
           <DialogTitle>Add New Document</DialogTitle>
           <Box component="form" padding={2} onSubmit={onSubmit}>
             <TextField
+              required
               margin="dense"
               id="name"
               label="Judul Dokumen"
@@ -373,9 +383,10 @@ const Dashboard = (props) => {
             />
             <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label">
-                Jenis Dokumen
+                Jenis Dokumen *
               </InputLabel>
               <Select
+                required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={type}
@@ -555,8 +566,11 @@ const Dashboard = (props) => {
             )}
 
             <FormControl fullWidth margin="normal">
-              <InputLabel id="demo-simple-select-label">PIC Dokumen</InputLabel>
+              <InputLabel id="demo-simple-select-label">
+                PIC Dokumen *
+              </InputLabel>
               <Select
+                required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={pic}
@@ -570,9 +584,10 @@ const Dashboard = (props) => {
             </FormControl>
             <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label">
-                Posisi Dokumen
+                Posisi Dokumen *
               </InputLabel>
               <Select
+                required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={position}
@@ -606,6 +621,9 @@ const Dashboard = (props) => {
               onChange={onChange}
             />
             <Button
+              disabled={
+                type === "BAPP" && numPages !== numPagesHardcopy ? true : false
+              }
               type="submit"
               // fullWidth
               variant="outlined"

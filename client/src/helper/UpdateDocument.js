@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import jwt_decode from "jwt-decode";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const UpdateDocument = ({ setAuth }) => {
   const { id } = useParams();
@@ -30,6 +31,14 @@ const UpdateDocument = ({ setAuth }) => {
     console.log("ISI UPDATE DOKUMEN: ", update);
 
     navigate("/");
+    toast.success("Dokumen berhasil di update.", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
   };
 
   useEffect(() => {

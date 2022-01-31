@@ -8,6 +8,8 @@ import Dashboard from "./components/Dashboard";
 import UpdateDoc from "./helper/UpdateDocument";
 import { Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -44,6 +46,7 @@ function App() {
 
   return (
     <div>
+      <ToastContainer />
       <Routes>
         <Route
           exact
