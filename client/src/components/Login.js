@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Login = ({ setAuth }) => {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { state } = useLocation();
   // const { id } = state;
 
@@ -33,17 +34,14 @@ const Login = ({ setAuth }) => {
     try {
       const body = { email, password };
       const position = email === "000000" ? "Senior Manager" : null;
-      const response = await axios.post(
-        "http://localhost:5000/api/v1/auth/login",
-        body
-      );
+      const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, body);
       const { token } = response.data;
 
       if (token) {
         localStorage.setItem("token", token);
         if (state) {
           const update = await axios.put(
-            `http://localhost:5000/api/v1/docs/update/${state.id}`,
+            `${BASE_URL}/api/v1/docs/update/${state.id}`,
             { position },
             {
               headers: {

@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,7 +27,7 @@ function App() {
         headers: { token: localStorage.token },
       };
       const response = await axios.post(
-        "http://localhost:5000/api/v1/auth/verify",
+        `${BASE_URL}/api/v1/auth/verify`,
         data,
         token
       );

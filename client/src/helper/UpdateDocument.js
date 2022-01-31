@@ -3,8 +3,10 @@ import jwt_decode from "jwt-decode";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 const UpdateDocument = ({ setAuth }) => {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ const UpdateDocument = ({ setAuth }) => {
       const position =
         decoded.user.email === "000000" ? "Senior Manager" : null;
       const update = await axios.put(
-        `http://localhost:5000/api/v1/docs/update/${id}`,
+        `${BASE_URL}/api/v1/docs/update/${id}`,
         { position },
         {
           headers: {
@@ -46,12 +48,20 @@ const UpdateDocument = ({ setAuth }) => {
     docUpdate();
   }, []);
 
-  //Buat login baru disini
-  //saat submit login, hit API login dan update
-  //jika login pakai email tertentu, update posisi dokumen
-  //redirect ke halaman dashboard
-
-  return <></>;
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress size={60} />
+      </Box>
+    </>
+  );
 };
 
 export default UpdateDocument;

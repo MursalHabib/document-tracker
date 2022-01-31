@@ -51,6 +51,7 @@ import { toast } from "react-toastify";
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
 const Dashboard = (props) => {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const drawerWidth = 240;
   const theme = useTheme();
   const { window, setAuth } = props;
@@ -147,7 +148,7 @@ const Dashboard = (props) => {
     try {
       const body = { title, type, pic, position, info };
       const response = await axios.post(
-        "http://localhost:5000/api/v1/docs/create",
+        `${BASE_URL}/api/v1/docs/create`,
         body,
         {
           headers: {

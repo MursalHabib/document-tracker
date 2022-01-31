@@ -188,6 +188,9 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable({ testRefresh }) {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const BASE_URL_CLIENT = process.env.REACT_APP_BASE_URL_CLIENT;
+
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("calories");
   const [selected, setSelected] = useState([]);
@@ -213,15 +216,11 @@ export default function EnhancedTable({ testRefresh }) {
     e.preventDefault();
     try {
       const body = { id, title, type, pic, position, info };
-      await axios.put(
-        `http://localhost:5000/api/v1/docs/update/${body.id}`,
-        body,
-        {
-          headers: {
-            token: localStorage.token,
-          },
-        }
-      );
+      await axios.put(`${BASE_URL}/api/v1/docs/update/${body.id}`, body, {
+        headers: {
+          token: localStorage.token,
+        },
+      });
       setDialogOpen(false);
       setDataChange((old) => old + 1);
       toast.success("Berhasil update dokumen", {
@@ -257,14 +256,11 @@ export default function EnhancedTable({ testRefresh }) {
 
   const getData = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/v1/docs/documents",
-        {
-          headers: {
-            token: localStorage.token,
-          },
-        }
-      );
+      const res = await axios.get(`${BASE_URL}/api/v1/docs/documents`, {
+        headers: {
+          token: localStorage.token,
+        },
+      });
       setTableContent(res.data);
       return res.data;
     } catch (error) {
@@ -537,9 +533,7 @@ export default function EnhancedTable({ testRefresh }) {
                 </TableBody>
               </Table>
               <Grid sx={{ textAlign: "center", marginTop: 10 }}>
-                <QRCode
-                  value={"http://localhost:3000/update/" + dataDetail.id}
-                />
+                <QRCode value={`${BASE_URL_CLIENT}/update/${dataDetail.id}`} />
               </Grid>
             </Box>
           </Grid>
