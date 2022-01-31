@@ -34,6 +34,7 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
+import { toast } from "react-toastify";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -223,8 +224,24 @@ export default function EnhancedTable({ testRefresh }) {
       );
       setDialogOpen(false);
       setDataChange((old) => old + 1);
+      toast.success("Berhasil update dokumen", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.log(error);
+      toast.error("Uh oh ada kesalahan di server :(", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 

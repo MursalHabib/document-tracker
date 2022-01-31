@@ -132,14 +132,7 @@ const Dashboard = (props) => {
     try {
       localStorage.removeItem("token");
       setAuth(false);
-      toast.info("Logged out successfully", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+
       console.log("LOGGED OUT SUCCESSFULLY...");
     } catch (error) {
       console.error(error.message);
@@ -165,7 +158,15 @@ const Dashboard = (props) => {
       setDialogOpen(false);
       setRefresh((old) => old + 1);
       setSubmitted(body);
-      setDialogSuccessOpen(true);
+      toast.success("Dokumen berhasil dibuat", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      // setDialogSuccessOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -416,7 +417,6 @@ const Dashboard = (props) => {
                 label="Softcopy"
               />
               <FormControlLabel
-                value="Hardcopy"
                 value="Hardcopy"
                 control={<Radio />}
                 label="Hardcopy"

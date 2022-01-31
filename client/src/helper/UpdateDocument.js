@@ -9,36 +9,37 @@ const UpdateDocument = ({ setAuth }) => {
   const navigate = useNavigate();
 
   const docUpdate = async () => {
-    var token = localStorage.token;
-    var decoded = jwt_decode(token);
-
-    console.log(decoded);
     // localStorage.removeItem("token");
     if (!localStorage.token) {
       navigate("/login", { state: { id: id } });
-      console.log(id);
     }
-    const position = decoded.user.email === "000000" ? "Senior Manager" : null;
-    const update = await axios.put(
-      `http://localhost:5000/api/v1/docs/update/${id}`,
-      { position },
-      {
-        headers: {
-          token: localStorage.token,
-        },
-      }
-    );
-    console.log("ISI UPDATE DOKUMEN: ", update);
+    if (localStorage.token) {
+      var token = localStorage.token;
+      var decoded = jwt_decode(token);
+      console.log(decoded);
+      const position =
+        decoded.user.email === "000000" ? "Senior Manager" : null;
+      const update = await axios.put(
+        `http://localhost:5000/api/v1/docs/update/${id}`,
+        { position },
+        {
+          headers: {
+            token: localStorage.token,
+          },
+        }
+      );
+      console.log("ISI UPDATE DOKUMEN: ", update);
 
-    navigate("/");
-    toast.success("Dokumen berhasil di update.", {
-      position: "top-center",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+      navigate("/");
+      toast.success("Berhasil update posisi dokumen", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   useEffect(() => {

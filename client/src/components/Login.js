@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = ({ setAuth }) => {
   const { state } = useLocation();
@@ -50,15 +51,39 @@ const Login = ({ setAuth }) => {
               },
             }
           );
+          toast.success("Berhasil update posisi dokumen", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
           console.log("ISI UPDATE DOKUMEN: ", update);
         }
         setAuth(true);
         console.log("SUCCESSFULLY LOGIN...");
       } else {
         setAuth(false);
+        toast.error("Incorrect email or password", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         console.log("LOGIN FAILED");
       }
     } catch (error) {
+      toast.error("Incorrect email or password", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       console.error(error);
     }
   };
