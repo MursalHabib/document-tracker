@@ -332,7 +332,7 @@ export default function EnhancedTable({ testRefresh }) {
                         scope="row"
                         padding="normal"
                       >
-                        {index + 1}
+                        {row.id}
                       </TableCell>
                       <TableCell>{row.title}</TableCell>
                       <TableCell align="right">{row.type}</TableCell>
@@ -353,6 +353,15 @@ export default function EnhancedTable({ testRefresh }) {
                               : "outlined"
                           }
                         />
+                        {/* <QrCodeIcon
+                          color="secondary"
+                          sx={{
+                            position: "absolute",
+                            marginLeft: -1.5,
+                            marginTop: 2,
+                            backgroundColor: "white",
+                          }}
+                        /> */}
                       </TableCell>
                       <TableCell align="right">{row.info}</TableCell>
                       <TableCell align="right">

@@ -17,12 +17,14 @@ import { toast } from "react-toastify";
 const Login = ({ setAuth }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { state } = useLocation();
-  // const { id } = state;
 
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
+
+  const EGM = "111111";
+  const SM = "000000";
 
   const { email, password } = inputs;
 
@@ -33,7 +35,12 @@ const Login = ({ setAuth }) => {
     e.preventDefault();
     try {
       const body = { email, password };
-      const position = email === "000000" ? "Senior Manager" : null;
+      const position =
+        email === SM
+          ? "Senior Manager"
+          : email === EGM
+          ? "Executive General Manager"
+          : null;
       const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, body);
       const { token } = response.data;
 
