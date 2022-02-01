@@ -42,4 +42,22 @@ module.exports = {
       res.status(500).json({ message: "SERVER ERROR :(" });
     }
   },
+  deleteDocument: async (req, res) => {
+    const id = req.params.id;
+    try {
+      const deleted = await Documents.destroy({
+        where: { id },
+      });
+      if (deleted === 1) {
+        return res.json({ message: "DATA BERHASIL DIHAPUS..." });
+      } else {
+        return res.json({
+          message: `TIDAK BERHASIL MENGHAPUS DATA DENGAN ID: ${id}`,
+        });
+      }
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ message: "SERVER ERROR :(" });
+    }
+  },
 };
