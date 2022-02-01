@@ -28,6 +28,7 @@ import {
   Chip,
   Grid,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
@@ -365,20 +366,24 @@ export default function EnhancedTable({ testRefresh }) {
                       </TableCell>
                       <TableCell align="right">{row.info}</TableCell>
                       <TableCell align="right">
-                        <IconButton
-                          color="secondary"
-                          aria-label="qr code"
-                          onClick={() => handleViewQR(row)}
-                        >
-                          <QrCodeIcon />
-                        </IconButton>
-                        <IconButton
-                          color="primary"
-                          aria-label="edit"
-                          onClick={() => handleEdit(row)}
-                        >
-                          <EditIcon />
-                        </IconButton>
+                        <Tooltip title="Show QR Code">
+                          <IconButton
+                            color="secondary"
+                            aria-label="qr code"
+                            onClick={() => handleViewQR(row)}
+                          >
+                            <QrCodeIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit Document">
+                          <IconButton
+                            color="primary"
+                            aria-label="edit"
+                            onClick={() => handleEdit(row)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   );
