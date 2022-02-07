@@ -304,7 +304,9 @@ const Dashboard = (props) => {
           >
             <MenuIcon />
           </IconButton> */}
-          <Typography variant="h5">WIMDO</Typography>
+          <Typography variant="h5" fontFamily={"Oswald"}>
+            WIMDO
+          </Typography>
           <IconButton color="inherit" onClick={logout} sx={{ ml: 2 }}>
             <LogoutIcon />
           </IconButton>

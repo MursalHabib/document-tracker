@@ -29,9 +29,12 @@ import {
   Grid,
   useMediaQuery,
   Tooltip,
+  InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import SearchIcon from "@mui/icons-material/Search";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
@@ -159,6 +162,7 @@ export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const BASE_URL_CLIENT = process.env.REACT_APP_BASE_URL_CLIENT;
 
+  const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("calories");
   const [selected, setSelected] = useState([]);
@@ -169,6 +173,7 @@ export default function EnhancedTable({ testRefresh }) {
   const [dialogQROpen, setDialogQROpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
+  const [query, setQuery] = useState("");
   const theme = useTheme();
   const componentRef = useRef();
 
@@ -200,13 +205,21 @@ export default function EnhancedTable({ testRefresh }) {
           List Dokumen
         </Typography>
         <TextField
-          size="small"
-          onChange={(e) => {
-            const filtered = tableContent.filter((name) =>
-              name.title.match(new RegExp(e.target.value, "i"))
-            );
-            console.log(filtered);
+          color="secondary"
+          placeholder="Cari dokumen"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
           }}
+          autoFocus
+          sx={{ width: 500 }}
+          size="small"
+          name="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
       </Toolbar>
     );
@@ -266,12 +279,14 @@ export default function EnhancedTable({ testRefresh }) {
 
   const getData = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`${BASE_URL}/api/v1/docs/documents`, {
         headers: {
           token: localStorage.token,
         },
       });
       setTableContent(res.data);
+      setLoading(false);
       return res.data;
     } catch (error) {
       console.error(error);
@@ -320,50 +335,63 @@ export default function EnhancedTable({ testRefresh }) {
               rowCount={tableContent.length}
             />
             <TableBody>
-              {tableContent
-                .sort((a, b) => a.id - b.id)
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
+              {loading === true ? (
+                <Typography variant="h5" align="center" marginTop={3}>
+                  loading...
+                </Typography>
+              ) : (
+                tableContent
+                  .filter((name) =>
+                    name.title.match(
+                      new RegExp(
+                        query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
+                        "i"
+                      )
+                    )
+                  )
+                  .sort((a, b) => a.id - b.id)
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      // onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
-                      // aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      // selected={isItemSelected}
-                    >
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="normal"
+                    return (
+                      <TableRow
+                        hover
+                        // onClick={(event) => handleClick(event, row.name)}
+                        role="checkbox"
+                        // aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        // selected={isItemSelected}
                       >
-                        {row.id}
-                      </TableCell>
-                      <TableCell>{row.title}</TableCell>
-                      <TableCell>{row.type}</TableCell>
-                      <TableCell>{row.pic}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.position}
-                          color={
-                            row.position === "Executive General Manager"
-                              ? "success"
-                              : row.position === "Senior Manager"
-                              ? "primary"
-                              : "default"
-                          }
-                          variant={
-                            row.position === "Executive General Manager"
-                              ? "filled"
-                              : "outlined"
-                          }
-                        />
-                        {/* <QrCodeIcon
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="normal"
+                        >
+                          {row.id}
+                        </TableCell>
+                        <TableCell>{row.title}</TableCell>
+                        <TableCell>{row.type}</TableCell>
+                        <TableCell>{row.pic}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={row.position}
+                            color={
+                              row.position === "Executive General Manager"
+                                ? "success"
+                                : row.position === "Senior Manager"
+                                ? "primary"
+                                : "default"
+                            }
+                            variant={
+                              row.position === "Executive General Manager"
+                                ? "filled"
+                                : "outlined"
+                            }
+                          />
+                          {/* <QrCodeIcon
                           color="secondary"
                           sx={{
                             position: "absolute",
@@ -372,32 +400,33 @@ export default function EnhancedTable({ testRefresh }) {
                             backgroundColor: "white",
                           }}
                         /> */}
-                      </TableCell>
-                      <TableCell>{row.info}</TableCell>
-                      <TableCell>
-                        <Tooltip title="Show QR Code">
-                          <IconButton
-                            color="secondary"
-                            aria-label="qr code"
-                            onClick={() => handleViewQR(row)}
-                          >
-                            <QrCodeIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Edit Document">
-                          <IconButton
-                            color="primary"
-                            aria-label="edit"
-                            onClick={() => handleEdit(row)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
+                        </TableCell>
+                        <TableCell>{row.info}</TableCell>
+                        <TableCell>
+                          <Tooltip title="Show QR Code">
+                            <IconButton
+                              color="secondary"
+                              aria-label="qr code"
+                              onClick={() => handleViewQR(row)}
+                            >
+                              <QrCodeIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Edit Document">
+                            <IconButton
+                              color="primary"
+                              aria-label="edit"
+                              onClick={() => handleEdit(row)}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+              )}
+              {/* {emptyRows > 0 && (
                 <TableRow
                   style={{
                     height: 53 * emptyRows,
@@ -405,14 +434,23 @@ export default function EnhancedTable({ testRefresh }) {
                 >
                   <TableCell colSpan={6} />
                 </TableRow>
-              )}
+              )} */}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[10, 25, 50, 100]}
           component="div"
-          count={tableContent.length}
+          count={
+            tableContent.filter((name) =>
+              name.title.match(
+                new RegExp(
+                  query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
+                  "i"
+                )
+              )
+            ).length
+          }
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
