@@ -51,7 +51,7 @@ module.exports = {
       if (deleted === 1) {
         return res.json({ message: "DATA BERHASIL DIHAPUS..." });
       } else {
-        return res.json({
+        return res.status(404).json({
           message: `TIDAK BERHASIL MENGHAPUS DATA DENGAN ID: ${id}`,
         });
       }

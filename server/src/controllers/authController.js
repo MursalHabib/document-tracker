@@ -36,7 +36,7 @@ module.exports = {
         where: { email },
       });
       if (!checkUser) {
-        return res.status(403).json({ message: "USER NOT FOUND :(" });
+        return res.status(404).json({ message: "USER NOT FOUND :(" });
       }
 
       const validPassword = await bcrypt.compare(password, checkUser.password);

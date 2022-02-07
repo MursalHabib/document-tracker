@@ -155,39 +155,6 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-const EnhancedTableToolbar = (props) => {
-  const { numSelected } = props;
-
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
-            ),
-        }),
-      }}
-    >
-      <Typography
-        sx={{ flex: "1 1 100%" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        List Dokumen
-      </Typography>
-    </Toolbar>
-  );
-};
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-};
-
 export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const BASE_URL_CLIENT = process.env.REACT_APP_BASE_URL_CLIENT;
@@ -206,6 +173,48 @@ export default function EnhancedTable({ testRefresh }) {
   const componentRef = useRef();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const EnhancedTableToolbar = (props) => {
+    const { numSelected } = props;
+
+    return (
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+          ...(numSelected > 0 && {
+            bgcolor: (theme) =>
+              alpha(
+                theme.palette.primary.main,
+                theme.palette.action.activatedOpacity
+              ),
+          }),
+        }}
+      >
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          List Dokumen
+        </Typography>
+        <TextField
+          size="small"
+          onChange={(e) => {
+            const filtered = tableContent.filter((name) =>
+              name.title.match(new RegExp(e.target.value, "i"))
+            );
+            console.log(filtered);
+          }}
+        />
+      </Toolbar>
+    );
+  };
+
+  EnhancedTableToolbar.propTypes = {
+    numSelected: PropTypes.number.isRequired,
+  };
 
   const onChange = (e) => {
     setDataDetail({ ...dataDetail, [e.target.name]: e.target.value });
@@ -547,7 +556,9 @@ export default function EnhancedTable({ testRefresh }) {
                 </TableBody>
               </Table>
               <Grid sx={{ textAlign: "center", marginTop: 10 }}>
-                <QRCode value={`${BASE_URL_CLIENT}/update/${dataDetail.id}`} />
+                <QRCode
+                  value={"http://localhost:3000/update/" + dataDetail.id}
+                />
               </Grid>
             </Box>
           </Grid>
