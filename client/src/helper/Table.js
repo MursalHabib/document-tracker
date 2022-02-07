@@ -504,7 +504,12 @@ export default function EnhancedTable({ testRefresh }) {
             value={dataDetail.info}
             onChange={onChange}
           />
-          <Button type="submit" variant="outlined" sx={{ mt: 3, mb: 2 }}>
+          <Button
+            type="submit"
+            variant="outlined"
+            color="secondary"
+            sx={{ mt: 3, mb: 2 }}
+          >
             Update Document
           </Button>
           <Button
@@ -566,7 +571,7 @@ export default function EnhancedTable({ testRefresh }) {
             <ReactToPrint
               pageStyle={{ alignItems: "center" }}
               documentTitle={dataDetail.title}
-              trigger={() => <Button>Print</Button>}
+              trigger={() => <Button color="secondary">Print</Button>}
               content={() => componentRef.current}
               pageStyle="@page { size: 8.3in 11.7in }"
             />

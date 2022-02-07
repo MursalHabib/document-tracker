@@ -280,6 +280,7 @@ const Dashboard = (props) => {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
+        color="secondary"
         position="fixed"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
@@ -368,6 +369,8 @@ const Dashboard = (props) => {
       >
         <Toolbar />
         <Button
+          color="secondary"
+          disableElevation={true}
           variant="contained"
           sx={{ marginBottom: 2 }}
           onClick={() => setDialogOpen(true)}
@@ -390,15 +393,17 @@ const Dashboard = (props) => {
               type="text"
               fullWidth
               variant="outlined"
+              color="secondary"
               name="title"
               value={title}
               onChange={onChange}
             />
             <FormControl fullWidth margin="dense">
-              <InputLabel id="demo-simple-select-label">
+              <InputLabel id="demo-simple-select-label" color="secondary">
                 Jenis Dokumen *
               </InputLabel>
               <Select
+                color="secondary"
                 required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -425,12 +430,12 @@ const Dashboard = (props) => {
             >
               <FormControlLabel
                 value="Softcopy"
-                control={<Radio />}
+                control={<Radio color="secondary" />}
                 label="Softcopy"
               />
               <FormControlLabel
                 value="Hardcopy"
-                control={<Radio />}
+                control={<Radio color="secondary" />}
                 label="Hardcopy"
               />
             </RadioGroup>
@@ -578,10 +583,11 @@ const Dashboard = (props) => {
             )}
 
             <FormControl fullWidth margin="normal">
-              <InputLabel id="demo-simple-select-label">
+              <InputLabel id="demo-simple-select-label" color="secondary">
                 PIC Dokumen *
               </InputLabel>
               <Select
+                color="secondary"
                 required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -595,10 +601,11 @@ const Dashboard = (props) => {
               </Select>
             </FormControl>
             <FormControl fullWidth margin="dense">
-              <InputLabel id="demo-simple-select-label">
+              <InputLabel id="demo-simple-select-label" color="secondary">
                 Posisi Dokumen *
               </InputLabel>
               <Select
+                color="secondary"
                 required
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -620,6 +627,7 @@ const Dashboard = (props) => {
               </Select>
             </FormControl>
             <TextField
+              color="secondary"
               multiline
               rows={3}
               margin="dense"
@@ -639,6 +647,7 @@ const Dashboard = (props) => {
               type="submit"
               // fullWidth
               variant="outlined"
+              color="secondary"
               sx={{ mt: 3, mb: 2 }}
             >
               Create Document
