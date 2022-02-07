@@ -52,7 +52,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/l
 
 const Dashboard = (props) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-  const drawerWidth = 240;
+  const drawerWidth = 0;
   const theme = useTheme();
   const { window, setAuth } = props;
 
@@ -287,8 +287,14 @@ const Dashboard = (props) => {
           //   backgroundColor: "white",
         }}
       >
-        <Toolbar>
-          <IconButton
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mx: 5,
+          }}
+        >
+          {/* <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
@@ -296,9 +302,13 @@ const Dashboard = (props) => {
             sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
+          </IconButton> */}
+          <Typography variant="h5">WIMDO</Typography>
+          <IconButton color="inherit" onClick={logout} sx={{ ml: 2 }}>
+            <LogoutIcon />
           </IconButton>
 
-          <Search>
+          {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -306,10 +316,10 @@ const Dashboard = (props) => {
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
             />
-          </Search>
+          </Search> */}
         </Toolbar>
       </AppBar>
-      <Box
+      {/* <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
@@ -345,13 +355,14 @@ const Dashboard = (props) => {
         >
           {drawer}
         </Drawer>
-      </Box>
+      </Box> */}
 
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
+          mx: 5,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >

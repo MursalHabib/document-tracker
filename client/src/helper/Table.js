@@ -124,7 +124,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align={"left"}
             padding={"normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -345,9 +345,9 @@ export default function EnhancedTable({ testRefresh }) {
                         {row.id}
                       </TableCell>
                       <TableCell>{row.title}</TableCell>
-                      <TableCell align="right">{row.type}</TableCell>
-                      <TableCell align="right">{row.pic}</TableCell>
-                      <TableCell align="right">
+                      <TableCell>{row.type}</TableCell>
+                      <TableCell>{row.pic}</TableCell>
+                      <TableCell>
                         <Chip
                           label={row.position}
                           color={
@@ -373,8 +373,8 @@ export default function EnhancedTable({ testRefresh }) {
                           }}
                         /> */}
                       </TableCell>
-                      <TableCell align="right">{row.info}</TableCell>
-                      <TableCell align="right">
+                      <TableCell>{row.info}</TableCell>
+                      <TableCell>
                         <Tooltip title="Show QR Code">
                           <IconButton
                             color="secondary"
