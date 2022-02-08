@@ -30,8 +30,8 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { styled, alpha } from "@mui/material/styles";
-import MailIcon from "@mui/icons-material/Mail";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import LogoutIcon from "@mui/icons-material/Logout";
 import TableDocs from "../helper/Table";
 import axios from "axios";
@@ -51,7 +51,7 @@ const Dashboard = (props) => {
   const [onRadio, setOnRadio] = useState("");
   const [submitted, setSubmitted] = useState({});
   const [refresh, setRefresh] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfFileHardcopy, setPdfFileHardcopy] = useState(null);
   const [pdfFileError, setPdfFileError] = useState("");
@@ -126,6 +126,7 @@ const Dashboard = (props) => {
   }
 
   function onDocumentLoadSuccessHardcopy({ numPages }) {
+    setIsLoading(false);
     setNumPagesHardcopy(numPages);
   }
 
@@ -333,7 +334,7 @@ const Dashboard = (props) => {
               >
                 <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
                   <Box sx={{ border: "1px solid lightgray" }}>
-                    <Page scale={0.3} pageNumber={pageNumber} />
+                    <Page scale={0.2} pageNumber={pageNumber} />
                   </Box>
                   <Typography variant="subtitle2" align="center">
                     {numPages} Halaman
@@ -360,7 +361,7 @@ const Dashboard = (props) => {
               >
                 <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
                   <Box sx={{ border: "1px solid lightgray" }}>
-                    <Page scale={0.3} pageNumber={pageNumber} />
+                    <Page scale={0.2} pageNumber={pageNumber} />
                   </Box>
                   <Typography variant="subtitle2" align="center">
                     {numPages} Halaman
@@ -415,6 +416,8 @@ const Dashboard = (props) => {
                   sx={{
                     display: "flex",
                     marginTop: 3,
+                    justifyContent: "flex-start",
+                    alignItems: "center",
                   }}
                 >
                   <Document
@@ -422,20 +425,50 @@ const Dashboard = (props) => {
                     onLoadSuccess={onDocumentLoadSuccessHardcopy}
                   >
                     <Box sx={{ border: "1px solid lightgray" }}>
-                      <Page scale={0.3} pageNumber={pageNumberHardcopy} />
+                      <Page scale={0.2} pageNumber={pageNumberHardcopy} />
                     </Box>
                     <Typography variant="subtitle2" align="center">
                       {numPagesHardcopy} Halaman
                     </Typography>
                   </Document>
+                  {isLoading === false &&
+                    numPages !== null &&
+                    numPagesHardcopy !== null &&
+                    (numPages === numPagesHardcopy ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginLeft: 10,
+                        }}
+                      >
+                        <CheckCircleIcon
+                          sx={{ fontSize: 70 }}
+                          color={"success"}
+                        />
+                        <Typography color={"success"}>
+                          Jumlah halaman sesuai
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginLeft: 10,
+                        }}
+                      >
+                        <CancelIcon sx={{ fontSize: 70 }} color={"error"} />
+                        <Typography color={"error"}>
+                          Jumlah halaman tidak sesuai
+                        </Typography>
+                      </Box>
+                    ))}
                 </Box>
-                {numPages !== null &&
-                  numPagesHardcopy !== null &&
-                  (numPages === numPagesHardcopy ? (
-                    <Typography>Jumlah halaman sesuai</Typography>
-                  ) : (
-                    <Typography>Jumlah halaman tidak sesuai</Typography>
-                  ))}
               </FormControl>
             )}
 

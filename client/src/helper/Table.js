@@ -30,7 +30,6 @@ import {
   useMediaQuery,
   Tooltip,
   InputAdornment,
-  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
@@ -338,106 +337,82 @@ export default function EnhancedTable({ testRefresh }) {
               rowCount={tableContent.length}
             />
             <TableBody>
-              {loading === true ? (
-                <Typography variant="h5" align="center" marginTop={3}>
-                  loading...
-                </Typography>
-              ) : (
-                tableContent
-                  .filter((name) =>
-                    name.title.match(
-                      new RegExp(
-                        query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
-                        "i"
-                      )
+              {tableContent
+                .filter((name) =>
+                  name.title.match(
+                    new RegExp(
+                      query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
+                      "i"
                     )
                   )
-                  .sort((a, b) => a.id - b.id)
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    const labelId = `enhanced-table-checkbox-${index}`;
+                )
+                .sort((a, b) => a.id - b.id)
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-                    return (
-                      <TableRow
-                        hover
-                        // onClick={(event) => handleClick(event, row.name)}
-                        role="checkbox"
-                        // aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.id}
-                        // selected={isItemSelected}
+                  return (
+                    <TableRow
+                      hover
+                      // onClick={(event) => handleClick(event, row.name)}
+                      role="checkbox"
+                      // aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      // selected={isItemSelected}
+                    >
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding="normal"
                       >
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="normal"
-                        >
-                          {index + 1}
-                        </TableCell>
-                        <TableCell>{row.title}</TableCell>
-                        <TableCell>{row.type}</TableCell>
-                        <TableCell>{row.pic}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={row.position}
-                            color={
-                              row.position === "Executive General Manager"
-                                ? "success"
-                                : row.position === "Senior Manager"
-                                ? "primary"
-                                : "default"
-                            }
-                            variant={
-                              row.position === "Executive General Manager"
-                                ? "filled"
-                                : "outlined"
-                            }
-                          />
-                          {/* <QrCodeIcon
-                          color="secondary"
-                          sx={{
-                            position: "absolute",
-                            marginLeft: -1.5,
-                            marginTop: 2,
-                            backgroundColor: "white",
-                          }}
-                        /> */}
-                        </TableCell>
-                        <TableCell>{row.info}</TableCell>
-                        <TableCell>
-                          <Tooltip title="Show QR Code">
-                            <IconButton
-                              color="secondary"
-                              aria-label="qr code"
-                              onClick={() => handleViewQR(row)}
-                            >
-                              <QrCodeIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Edit Document">
-                            <IconButton
-                              color="primary"
-                              aria-label="edit"
-                              onClick={() => handleEdit(row)}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-              )}
-              {/* {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )} */}
+                        {index + 1}
+                      </TableCell>
+                      <TableCell>{row.title}</TableCell>
+                      <TableCell>{row.type}</TableCell>
+                      <TableCell>{row.pic}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.position}
+                          color={
+                            row.position === "Executive General Manager"
+                              ? "success"
+                              : row.position === "Senior Manager"
+                              ? "primary"
+                              : "default"
+                          }
+                          variant={
+                            row.position === "Executive General Manager"
+                              ? "filled"
+                              : "outlined"
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>{row.info}</TableCell>
+                      <TableCell>
+                        <Tooltip title="Show QR Code">
+                          <IconButton
+                            color="secondary"
+                            aria-label="qr code"
+                            onClick={() => handleViewQR(row)}
+                          >
+                            <QrCodeIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit Document">
+                          <IconButton
+                            color="primary"
+                            aria-label="edit"
+                            onClick={() => handleEdit(row)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>
