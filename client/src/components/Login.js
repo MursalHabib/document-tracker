@@ -9,22 +9,29 @@ import {
   Button,
   FormControlLabel,
   Grid,
+  InputAdornment,
+  CircularProgress,
+  IconButton,
 } from "@mui/material";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Login = ({ setAuth }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { state } = useLocation();
+  const EGM = "111111";
+  const SM = "000000";
 
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
   });
-
-  const EGM = "111111";
-  const SM = "000000";
+  const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   const { email, password } = inputs;
 
@@ -33,6 +40,7 @@ const Login = ({ setAuth }) => {
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const body = { email, password };
       const position =
@@ -66,6 +74,7 @@ const Login = ({ setAuth }) => {
           });
           console.log("ISI UPDATE DOKUMEN: ", update);
         }
+        setIsLoading(false);
         setAuth(true);
         console.log("SUCCESSFULLY LOGIN...");
       } else {
@@ -78,10 +87,11 @@ const Login = ({ setAuth }) => {
           pauseOnHover: true,
           draggable: true,
         });
+        setIsLoading(false);
         console.log("LOGIN FAILED");
       }
     } catch (error) {
-      toast.error("Incorrect email or password", {
+      toast.error("Uh oh, something wrong, please check your connection", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
@@ -89,69 +99,134 @@ const Login = ({ setAuth }) => {
         pauseOnHover: true,
         draggable: true,
       });
+      setIsLoading(false);
       console.error(error);
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Card
-        sx={{
-          marginTop: 8,
-          padding: 2,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4">Login</Typography>
-
-        <Box component="form" onSubmit={onSubmitForm} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            fullWidth
-            id="email"
-            label="NIK"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={email}
-            onChange={onChange}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            name="password"
-            label="password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={onChange}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+    <Grid
+      container
+      component="main"
+      sx={{ backgroundColor: "#f4f4f4", height: "100vh" }}
+    >
+      <Grid container marginX={{ xs: 1, md: 1, lg: 20, sm: 1 }} marginTop={6}>
+        <Grid item md={7} display={{ xs: "none", md: "block", lg: "block" }}>
+          <Box
+            sx={{
+              paddingInline: 8,
+              paddingBlock: 15,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "purple",
+              height: 260,
+            }}
           >
-            Login
-          </Button>
-          {/* <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid> */}
-        </Box>
-      </Card>
-    </Container>
+            <Typography variant="h2" fontFamily={"Oswald"} color={"white"}>
+              WIMDO
+            </Typography>
+            <Typography variant="h6" color={"white"}>
+              Where Is My Document?
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <Box
+            sx={{
+              paddingInline: 8,
+              paddingBlock: 15,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "white",
+              height: 260,
+            }}
+          >
+            <Typography variant="h4" fontFamily={"Oswald"} color={"secondary"}>
+              Login
+            </Typography>
+
+            <Box component="form" onSubmit={onSubmitForm} sx={{ mt: 1 }}>
+              <TextField
+                color="secondary"
+                size="small"
+                margin="normal"
+                fullWidth
+                id="email"
+                label="NIK"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                value={email}
+                onChange={onChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <AccountCircleIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                color="secondary"
+                size="small"
+                margin="normal"
+                fullWidth
+                name="password"
+                label="Password"
+                type={isVisible ? "password" : "text"}
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={onChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        sx={{ marginRight: -1 }}
+                        onClick={() => setIsVisible(!isVisible)}
+                      >
+                        {isVisible ? (
+                          <VisibilityIcon color="secondary" />
+                        ) : (
+                          <VisibilityOffIcon color="secondary" />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              {isLoading ? (
+                <Button
+                  disabled
+                  color="secondary"
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Loading...
+                </Button>
+              ) : (
+                <Button
+                  color="secondary"
+                  disabled={!email.length || !password.length ? true : false}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Login
+                </Button>
+              )}
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 

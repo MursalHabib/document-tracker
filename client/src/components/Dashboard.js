@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Drawer,
   AppBar,
   Typography,
   Divider,
@@ -15,18 +14,12 @@ import {
   InputBase,
   Button,
   Dialog,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
   Grid,
   Radio,
   RadioGroup,
@@ -37,14 +30,11 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { styled, alpha } from "@mui/material/styles";
-import MenuIcon from "@mui/icons-material/Menu";
 import MailIcon from "@mui/icons-material/Mail";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
 import TableDocs from "../helper/Table";
 import axios from "axios";
-import QRCode from "react-qr-code";
 import { Document, Page, pdfjs } from "react-pdf";
 import { toast } from "react-toastify";
 
@@ -58,7 +48,6 @@ const Dashboard = (props) => {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogSuccessOpen, setDialogSuccessOpen] = useState(false);
   const [onRadio, setOnRadio] = useState("");
   const [submitted, setSubmitted] = useState({});
   const [refresh, setRefresh] = useState(0);
@@ -83,50 +72,6 @@ const Dashboard = (props) => {
   });
 
   const { title, type, pic, position, info } = inputData;
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(3),
-      width: "auto",
-    },
-  }));
-
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }));
-
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    "& .MuiInputBase-input": {
-      padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-      transition: theme.transitions.create("width"),
-      width: "100%",
-      [theme.breakpoints.up("md")]: {
-        width: "40ch",
-      },
-    },
-  }));
 
   const logout = async (e) => {
     e.preventDefault();
@@ -167,44 +112,10 @@ const Dashboard = (props) => {
         pauseOnHover: true,
         draggable: true,
       });
-      // setDialogSuccessOpen(true);
     } catch (error) {
       console.log(error);
     }
   };
-
-  const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" sx={{ margin: 1 }}>
-          Document Tracker
-        </Typography>
-      </Toolbar>
-      <Divider />
-      <List>
-        {["Menu 1", "Menu 2", "Menu 3", "Menu 4"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        <ListItem button onClick={logout}>
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItem>
-      </List>
-    </div>
-  );
-
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -277,7 +188,7 @@ const Dashboard = (props) => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Grid container component="main" sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         color="secondary"
@@ -295,70 +206,14 @@ const Dashboard = (props) => {
             mx: 5,
           }}
         >
-          {/* <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton> */}
           <Typography variant="h5" fontFamily={"Oswald"}>
             WIMDO
           </Typography>
           <IconButton color="inherit" onClick={logout} sx={{ ml: 2 }}>
             <LogoutIcon />
           </IconButton>
-
-          {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search> */}
         </Toolbar>
       </AppBar>
-      {/* <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
-      >
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box> */}
 
       <Box
         component="main"
@@ -665,68 +520,9 @@ const Dashboard = (props) => {
             </Button>
           </Box>
         </Dialog>
-        <Dialog
-          fullWidth
-          open={dialogSuccessOpen}
-          onClose={() => setDialogSuccessOpen(false)}
-        >
-          <DialogTitle sx={{ textAlign: "center" }}>
-            Document Added Successfully!
-          </DialogTitle>
-          <DialogContent>
-            <Grid
-              sx={{
-                border: "1px solid grey",
-                width: 450,
-                marginBlock: 5,
-              }}
-            >
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ margin: 0 }}>Judul Dokumen</TableCell>
-                    <TableCell>{submitted.title}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Jenis Dokumen</TableCell>
-                    <TableCell>{submitted.type}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>PIC</TableCell>
-                    <TableCell>{submitted.pic}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Posisi Dokumen</TableCell>
-                    <TableCell>{submitted.position}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Keterangan</TableCell>
-                    <TableCell>{submitted.info}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Grid>
-            <Grid sx={{ textAlign: "center" }}>
-              <QRCode
-                value={"Posisi Dokumen: \n" + submitted.position}
-                size={200}
-              />
-            </Grid>
-            <Grid sx={{ textAlign: "center" }}>
-              <Button
-                onClick={() => setDialogSuccessOpen(false)}
-                color="inherit"
-                // fullWidth
-                variant="text"
-              >
-                Close
-              </Button>
-            </Grid>
-          </DialogContent>
-        </Dialog>
         <TableDocs testRefresh={refresh} />
       </Box>
-    </Box>
+    </Grid>
   );
 };
 

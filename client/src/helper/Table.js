@@ -179,6 +179,10 @@ export default function EnhancedTable({ testRefresh }) {
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
+  const handleQuery = (e) => {
+    setQuery(e.target.value);
+  };
+
   const EnhancedTableToolbar = (props) => {
     const { numSelected } = props;
 
@@ -214,12 +218,11 @@ export default function EnhancedTable({ testRefresh }) {
               </InputAdornment>
             ),
           }}
-          autoFocus
+          // autoFocus
           sx={{ width: 500 }}
           size="small"
-          name="search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleQuery}
         />
       </Toolbar>
     );
@@ -370,7 +373,7 @@ export default function EnhancedTable({ testRefresh }) {
                           scope="row"
                           padding="normal"
                         >
-                          {row.id}
+                          {index + 1}
                         </TableCell>
                         <TableCell>{row.title}</TableCell>
                         <TableCell>{row.type}</TableCell>
