@@ -207,7 +207,7 @@ export default function EnhancedTable({ testRefresh }) {
         >
           List Dokumen
         </Typography>
-        <TextField
+        {/* <TextField
           color="secondary"
           placeholder="Cari dokumen"
           InputProps={{
@@ -222,7 +222,7 @@ export default function EnhancedTable({ testRefresh }) {
           size="small"
           value={query}
           onChange={handleQuery}
-        />
+        /> */}
       </Toolbar>
     );
   };
@@ -320,14 +320,16 @@ export default function EnhancedTable({ testRefresh }) {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableContent.length) : 0;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
+    <Box>
+      <Paper>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
+        <TableContainer
+          sx={{ width: !fullScreen ? "100%" : 360, overflowX: "scroll" }}
+        >
           <Table
-            sx={{ minWidth: 750 }}
+            // sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={"medium"}
+            size={fullScreen ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -435,7 +437,13 @@ export default function EnhancedTable({ testRefresh }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <Dialog fullWidth open={dialogOpen} onClose={() => setDialogOpen(false)}>
+      <Dialog
+        fullScreen={fullScreen}
+        fullWidth
+        maxWidth="sm"
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+      >
         <DialogTitle>Edit Document</DialogTitle>
         <Box component="form" padding={2} onSubmit={onSubmit}>
           <TextField
@@ -551,7 +559,13 @@ export default function EnhancedTable({ testRefresh }) {
               height: "100%",
             }}
           >
-            <Box ref={componentRef} sx={{ alignItems: "center", padding: 5 }}>
+            <Box
+              ref={componentRef}
+              sx={{
+                alignItems: "center",
+                padding: fullScreen ? 1 : 5,
+              }}
+            >
               <Table>
                 <TableBody>
                   <TableRow>

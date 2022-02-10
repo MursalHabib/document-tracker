@@ -53,7 +53,22 @@ function App() {
           exact
           path="/login"
           element={
-            !isAuthenticated ? <Login setAuth={setAuth} /> : <Navigate to="/" />
+            isLoading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100vh",
+                }}
+              >
+                <CircularProgress size={60} />
+              </Box>
+            ) : !isAuthenticated ? (
+              <Login setAuth={setAuth} />
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
         <Route

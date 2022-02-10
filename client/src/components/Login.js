@@ -91,7 +91,7 @@ const Login = ({ setAuth }) => {
         console.log("LOGIN FAILED");
       }
     } catch (error) {
-      toast.error("Uh oh, something wrong, please check your connection", {
+      toast.error("Incorrect email or password", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,

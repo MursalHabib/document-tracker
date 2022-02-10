@@ -189,22 +189,22 @@ const Dashboard = (props) => {
   };
 
   return (
-    <Grid container component="main" sx={{ display: "flex" }}>
+    <Grid container component="main" sx={{ display: "flex", width: "100%" }}>
       <CssBaseline />
       <AppBar
         color="secondary"
         position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          //   backgroundColor: "white",
-        }}
+        // sx={{
+        //   width: { sm: `calc(100% - ${drawerWidth}px)` },
+        //   ml: { sm: `${drawerWidth}px` },
+        //   //   backgroundColor: "white",
+        // }}
       >
         <Toolbar
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            mx: 5,
+            mx: fullScreen ? 0 : 5,
           }}
         >
           <Typography variant="h5" fontFamily={"Oswald"}>
@@ -221,8 +221,8 @@ const Dashboard = (props) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          mx: 5,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          mx: fullScreen ? 0 : 5,
+          // width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar />
@@ -553,7 +553,9 @@ const Dashboard = (props) => {
             </Button>
           </Box>
         </Dialog>
-        <TableDocs testRefresh={refresh} />
+        <Grid item xs={12}>
+          <TableDocs testRefresh={refresh} />
+        </Grid>
       </Box>
     </Grid>
   );
