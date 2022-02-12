@@ -38,6 +38,7 @@ import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
 import { toast } from "react-toastify";
+import { DataGrid } from "@mui/x-data-grid";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -269,12 +270,14 @@ export default function EnhancedTable({ testRefresh }) {
     }
   };
 
-  const handleEdit = (i) => {
+  const handleEdit = (i, e) => {
+    e.stopPropagation();
     setDialogOpen(true);
     setDataDetail(i);
   };
 
-  const handleViewQR = (i) => {
+  const handleViewQR = (i, e) => {
+    e.stopPropagation();
     setDialogQROpen(true);
     setDataDetail(i);
   };
@@ -319,12 +322,80 @@ export default function EnhancedTable({ testRefresh }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableContent.length) : 0;
 
+  const renderDetailsButton = (params) => {
+    return (
+      <>
+        <Tooltip title="Show QR Code">
+          <IconButton
+            color="secondary"
+            aria-label="qr code"
+            onClick={(e) => handleViewQR(params.row, e)}
+          >
+            <QrCodeIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Edit Document">
+          <IconButton
+            color="primary"
+            aria-label="edit"
+            onClick={(e) => handleEdit(params.row, e)}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+      </>
+    );
+  };
+
+  const columns = [
+    { field: "id", headerName: "No.", width: 70, type: "number" },
+    { field: "title", headerName: "Judul Dokumen", width: 300 },
+    { field: "type", headerName: "Tipe Dokumen", width: 130 },
+    {
+      field: "pic",
+      headerName: "PIC",
+      width: 150,
+    },
+    {
+      field: "position",
+      headerName: "Posisi Dokumen",
+      width: 250,
+    },
+    {
+      field: "info",
+      headerName: "Keterangan",
+      width: 200,
+    },
+    {
+      field: "aksi",
+      headerName: "Aksi",
+      width: 100,
+      sortable: false,
+      renderCell: renderDetailsButton,
+      disableClickEventBubbling: true,
+    },
+  ];
+
   return (
     <Box>
-      <Paper>
+      <div style={{ width: "100%", backgroundColor: "white" }}>
+        <DataGrid
+          disableSelectionOnClick={true}
+          autoHeight={true}
+          rows={tableContent}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+          // checkboxSelection
+        />
+      </div>
+      {/* <Paper>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer
-          sx={{ width: !fullScreen ? "100%" : 360, overflowX: "scroll" }}
+          sx={{
+            width: !fullScreen ? "100%" : 360,
+            overflowX: fullScreen ? "scroll" : "hidden",
+          }}
         >
           <Table
             // sx={{ minWidth: 750 }}
@@ -436,7 +507,7 @@ export default function EnhancedTable({ testRefresh }) {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      </Paper>
+      </Paper> */}
       <Dialog
         fullScreen={fullScreen}
         fullWidth
@@ -515,6 +586,7 @@ export default function EnhancedTable({ testRefresh }) {
               <MenuItem value={"Manager Non MS Procurement"}>
                 Manager Non MS Procurement
               </MenuItem>
+              <MenuItem value={"Admin"}>Admin</MenuItem>
             </Select>
           </FormControl>
           <TextField

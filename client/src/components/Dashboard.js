@@ -514,6 +514,7 @@ const Dashboard = (props) => {
                 <MenuItem value={"Manager Non MS Procurement"}>
                   Manager Non MS Procurement
                 </MenuItem>
+                <MenuItem value={"Admin"}>Admin</MenuItem>
               </Select>
             </FormControl>
             <TextField
