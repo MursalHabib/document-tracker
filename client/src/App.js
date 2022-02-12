@@ -5,6 +5,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
+import UploadDocument from "./components/UploadDocument";
 import UpdateDoc from "./helper/UpdateDocument";
 import { Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
@@ -99,6 +100,28 @@ function App() {
               </Box>
             ) : isAuthenticated ? (
               <Dashboard setAuth={setAuth} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          exact
+          path="/upload-document"
+          element={
+            isLoading ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100vh",
+                }}
+              >
+                <CircularProgress size={60} />
+              </Box>
+            ) : isAuthenticated ? (
+              <UploadDocument setAuth={setAuth} />
             ) : (
               <Navigate to="/login" />
             )

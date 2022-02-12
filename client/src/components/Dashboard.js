@@ -37,6 +37,7 @@ import TableDocs from "../helper/Table";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -226,15 +227,25 @@ const Dashboard = (props) => {
         }}
       >
         <Toolbar />
-        <Button
-          color="secondary"
-          disableElevation={true}
-          variant="contained"
-          sx={{ marginBottom: 2 }}
-          onClick={() => setDialogOpen(true)}
-        >
-          Add Document
-        </Button>
+        <Grid sx={{ display: "flex" }}>
+          <Button
+            color="secondary"
+            disableElevation={true}
+            variant="contained"
+            sx={{ marginBottom: 2 }}
+            onClick={() => setDialogOpen(true)}
+          >
+            Add Document
+          </Button>
+          <Button
+            color="secondary"
+            component={Link}
+            to={"/upload-document"}
+            sx={{ marginBottom: 2, marginLeft: "auto" }}
+          >
+            Upload Document
+          </Button>
+        </Grid>
         <Dialog
           fullScreen={fullScreen}
           fullWidth
