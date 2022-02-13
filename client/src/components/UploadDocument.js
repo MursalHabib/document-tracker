@@ -8,6 +8,7 @@ import {
   Toolbar,
   IconButton,
   useMediaQuery,
+  Breadcrumbs,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -62,6 +63,16 @@ const UploadDocument = ({ setAuth }) => {
         }}
       >
         <Toolbar />
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link underline="hover" color="inherit" to="/">
+            <Typography color="text.secondary" variant="caption">
+              Dashboard
+            </Typography>
+          </Link>
+          <Typography color="text.secondary" variant="caption">
+            Upload Document
+          </Typography>
+        </Breadcrumbs>
         <Typography>Halaman upload dokumen</Typography>
       </Box>
     </Grid>

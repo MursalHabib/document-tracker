@@ -29,134 +29,14 @@ import {
   Grid,
   useMediaQuery,
   Tooltip,
-  InputAdornment,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeIcon from "@mui/icons-material/QrCode";
-import SearchIcon from "@mui/icons-material/Search";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
 import { toast } from "react-toastify";
 import { DataGrid } from "@mui/x-data-grid";
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-const headCells = [
-  {
-    id: "no",
-    numeric: false,
-    disablePadding: true,
-    label: "No.",
-  },
-  {
-    id: "name",
-    numeric: false,
-    disablePadding: true,
-    label: "Judul Dokumen",
-  },
-  {
-    id: "calories",
-    numeric: true,
-    disablePadding: false,
-    label: "Jenis Dokumen",
-  },
-  {
-    id: "fat",
-    numeric: true,
-    disablePadding: false,
-    label: "PIC",
-  },
-  {
-    id: "carbs",
-    numeric: true,
-    disablePadding: false,
-    label: "Posisi Dokumen",
-  },
-  {
-    id: "protein",
-    numeric: true,
-    disablePadding: false,
-    label: "Keterangan",
-  },
-  {
-    id: "aksi",
-    numeric: true,
-    disablePadding: false,
-    label: "Aksi",
-  },
-];
-
-function EnhancedTableHead(props) {
-  const { order, orderBy, numSelected, rowCount, onRequestSort } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={"left"}
-            padding={"normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-EnhancedTableHead.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
-};
 
 export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -178,59 +58,6 @@ export default function EnhancedTable({ testRefresh }) {
   const componentRef = useRef();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-
-  const handleQuery = (e) => {
-    setQuery(e.target.value);
-  };
-
-  const EnhancedTableToolbar = (props) => {
-    const { numSelected } = props;
-
-    return (
-      <Toolbar
-        sx={{
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-          ...(numSelected > 0 && {
-            bgcolor: (theme) =>
-              alpha(
-                theme.palette.primary.main,
-                theme.palette.action.activatedOpacity
-              ),
-          }),
-        }}
-      >
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          List Dokumen
-        </Typography>
-        {/* <TextField
-          color="secondary"
-          placeholder="Cari dokumen"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          // autoFocus
-          sx={{ width: 500 }}
-          size="small"
-          value={query}
-          onChange={handleQuery}
-        /> */}
-      </Toolbar>
-    );
-  };
-
-  EnhancedTableToolbar.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-  };
 
   const onChange = (e) => {
     setDataDetail({ ...dataDetail, [e.target.name]: e.target.value });
@@ -303,25 +130,6 @@ export default function EnhancedTable({ testRefresh }) {
     return () => {};
   }, [testRefresh, dataChange]);
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tableContent.length) : 0;
-
   const renderDetailsButton = (params) => {
     return (
       <>
@@ -380,134 +188,16 @@ export default function EnhancedTable({ testRefresh }) {
     <Box>
       <div style={{ width: "100%", backgroundColor: "white" }}>
         <DataGrid
+          loading={loading}
           disableSelectionOnClick={true}
           autoHeight={true}
           rows={tableContent}
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
-          // checkboxSelection
         />
       </div>
-      {/* <Paper>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer
-          sx={{
-            width: !fullScreen ? "100%" : 360,
-            overflowX: fullScreen ? "scroll" : "hidden",
-          }}
-        >
-          <Table
-            // sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={fullScreen ? "small" : "medium"}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              rowCount={tableContent.length}
-            />
-            <TableBody>
-              {tableContent
-                .filter((name) =>
-                  name.title.match(
-                    new RegExp(
-                      query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
-                      "i"
-                    )
-                  )
-                )
-                .sort((a, b) => a.id - b.id)
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <TableRow
-                      hover
-                      // onClick={(event) => handleClick(event, row.name)}
-                      role="checkbox"
-                      // aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      // selected={isItemSelected}
-                    >
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="normal"
-                      >
-                        {index + 1}
-                      </TableCell>
-                      <TableCell>{row.title}</TableCell>
-                      <TableCell>{row.type}</TableCell>
-                      <TableCell>{row.pic}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.position}
-                          color={
-                            row.position === "Executive General Manager"
-                              ? "success"
-                              : row.position === "Senior Manager"
-                              ? "primary"
-                              : "default"
-                          }
-                          variant={
-                            row.position === "Executive General Manager"
-                              ? "filled"
-                              : "outlined"
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>{row.info}</TableCell>
-                      <TableCell>
-                        <Tooltip title="Show QR Code">
-                          <IconButton
-                            color="secondary"
-                            aria-label="qr code"
-                            onClick={() => handleViewQR(row)}
-                          >
-                            <QrCodeIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Edit Document">
-                          <IconButton
-                            color="primary"
-                            aria-label="edit"
-                            onClick={() => handleEdit(row)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={
-            tableContent.filter((name) =>
-              name.title.match(
-                new RegExp(
-                  query.replace(/([.^$|*+?()\[\]{}\\-])/g, "\\$1"),
-                  "i"
-                )
-              )
-            ).length
-          }
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper> */}
       <Dialog
         fullScreen={fullScreen}
         fullWidth
@@ -652,10 +342,10 @@ export default function EnhancedTable({ testRefresh }) {
                     <TableCell>PIC</TableCell>
                     <TableCell>{dataDetail.pic}</TableCell>
                   </TableRow>
-                  <TableRow>
+                  {/* <TableRow>
                     <TableCell>Posisi Dokumen</TableCell>
                     <TableCell>{dataDetail.position}</TableCell>
-                  </TableRow>
+                  </TableRow> */}
                   <TableRow>
                     <TableCell>Keterangan</TableCell>
                     <TableCell>{dataDetail.info}</TableCell>

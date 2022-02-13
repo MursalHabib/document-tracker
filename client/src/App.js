@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import UploadDocument from "./components/UploadDocument";
+import NotFound from "./components/404";
 import UpdateDoc from "./helper/UpdateDocument";
 import { Route, Routes, Navigate } from "react-router-dom";
 import axios from "axios";
@@ -132,6 +133,8 @@ function App() {
           path="/update/:id"
           element={<UpdateDoc setAuth={setAuth} />}
         />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
