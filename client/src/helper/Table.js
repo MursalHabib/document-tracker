@@ -31,7 +31,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import QrCodeIcon from "@mui/icons-material/QrCode";
+import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
@@ -139,7 +139,7 @@ export default function EnhancedTable({ testRefresh }) {
             aria-label="qr code"
             onClick={(e) => handleViewQR(params.row, e)}
           >
-            <QrCodeIcon />
+            <QrCodeRoundedIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Edit Document">
@@ -314,7 +314,7 @@ export default function EnhancedTable({ testRefresh }) {
         open={dialogQROpen}
         onClose={() => setDialogQROpen(false)}
       >
-        <DialogTitle>Detail & QR Document</DialogTitle>
+        <DialogTitle sx={{ textAlign: "center" }}>QR Code Document</DialogTitle>
         <Box padding={2}>
           <Grid
             sx={{
@@ -325,7 +325,7 @@ export default function EnhancedTable({ testRefresh }) {
               ref={componentRef}
               sx={{
                 alignItems: "center",
-                padding: fullScreen ? 1 : 5,
+                padding: fullScreen ? 1 : 4,
               }}
             >
               <Table>

@@ -33,6 +33,7 @@ import { styled, alpha } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LogoutIcon from "@mui/icons-material/Logout";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import TableDocs from "../helper/Table";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -242,8 +243,9 @@ const Dashboard = (props) => {
             component={Link}
             to={"/upload-document"}
             sx={{ marginBottom: 2, marginLeft: "auto" }}
+            startIcon={<FileUploadRoundedIcon />}
           >
-            Upload Document
+            Upload File
           </Button>
         </Grid>
         <Dialog

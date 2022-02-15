@@ -62,7 +62,7 @@ const UploadDocument = ({ setAuth }) => {
           // width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />
+        <Toolbar variant="dense" />
         <Breadcrumbs aria-label="breadcrumb">
           <Link underline="hover" color="inherit" to="/">
             <Typography color="text.secondary" variant="caption">
@@ -70,7 +70,7 @@ const UploadDocument = ({ setAuth }) => {
             </Typography>
           </Link>
           <Typography color="text.secondary" variant="caption">
-            Upload Document
+            Upload File
           </Typography>
         </Breadcrumbs>
         <Typography>Halaman upload dokumen</Typography>
