@@ -1,9 +1,5 @@
 const { Documents, Users, Files } = require("../../db/models");
 const { Op } = require("sequelize");
-const multer = require("multer");
-const fs = require("fs");
-
-const upload = multer({ dest: "/tmp/" });
 
 module.exports = {
   createDocument: async (req, res) => {
@@ -18,7 +14,7 @@ module.exports = {
       });
       return res.json({ message: "Document Created...", document });
     } catch (error) {
-      res.status(500).json({ message: "SERVER ERROR" });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -27,8 +23,7 @@ module.exports = {
       const documents = await Documents.findAll();
       return res.json(documents);
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "SERVER ERROR" });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -42,8 +37,7 @@ module.exports = {
       );
       return res.json({ message: "DATA BERHASIL DIUPDATE..." });
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ message: "SERVER ERROR :(" });
+      res.status(500).json({ message: error.message });
     }
   },
   deleteDocument: async (req, res) => {
@@ -60,34 +54,30 @@ module.exports = {
         });
       }
     } catch (error) {
-      console.error(error.message);
-      res.status(500).json({ message: "SERVER ERROR :(" });
+      res.status(500).json({ message: error.message });
     }
   },
   uploadFile: async (req, res) => {
-    const { title, nama_file } = req.body;
-    const fileUpload = req.file.filename;
-    fs.rename(req.file.path, fileUpload, async function (error) {
-      if (error) {
-        console.log(error);
-        res.status(500).json({ message: "ERROR :(" });
-      } else {
-        try {
-          const uploadedFile = await Files.create({
-            title,
-            nama_file: req.file.filename,
-          });
-          return res.json({ message: "Document Created...", uploadedFile });
-        } catch (error) {
-          console.log(error);
-          res.status(500).json({ message: "SERVER ERROR :(" });
-        }
-      }
-    });
+    const fileUrl =
+      req.protocol + "://" + req.get("host") + "/uploads/" + req.file.filename;
+    console.log(fileUrl);
+    try {
+      const uploaded = await Files.create({
+        title: req.body.title,
+        nama_file: fileUrl,
+      });
+      res.status(201).json({
+        message: "File uploaded",
+        data: uploaded,
+      });
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
   },
   getAllFiles: async (req, res) => {
     try {
       const allFiles = await Files.findAll();
+      allFiles.forEach((e) => console.log(e.dataValues.nama_file));
       return res.json(allFiles);
     } catch (error) {
       console.log(error);

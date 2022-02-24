@@ -26,7 +26,7 @@ module.exports = {
       const token = jwtGen(newUser.dataValues.id, newUser.dataValues.email);
       return res.json({ message: "USER REGISTERED...", token });
     } catch (error) {
-      res.status(500).json({ message: "SERVER ERROR" });
+      res.status(500).json({ message: error });
     }
   },
   login: async (req, res) => {
@@ -46,7 +46,7 @@ module.exports = {
       const token = jwtGen(checkUser.dataValues.id, checkUser.dataValues.email);
       return res.json({ message: "LOGGED IN...", token });
     } catch (error) {
-      res.status(500).json({ message: "SERVER ERROR :(" });
+      res.status(500).json({ message: error });
     }
   },
   verifyUser: (req, res) => {

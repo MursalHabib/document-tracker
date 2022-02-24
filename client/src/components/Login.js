@@ -91,16 +91,23 @@ const Login = ({ setAuth }) => {
         console.log("LOGIN FAILED");
       }
     } catch (error) {
-      toast.error("Incorrect email or password", {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(
+        error.response.status === 429
+          ? error.response.data
+          : error.response.data.message,
+        {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
       setIsLoading(false);
-      console.error(error);
+      console.error("PESAN ERR: ", error.response.status);
+      console.log(error.response.headers);
+      console.log(error.response.data);
     }
   };
 

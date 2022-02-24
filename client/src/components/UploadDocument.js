@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import {
   Typography,
@@ -9,13 +9,53 @@ import {
   IconButton,
   useMediaQuery,
   Breadcrumbs,
+  Dialog,
+  Button,
+  DialogTitle,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { Document, Page, pdfjs } from "react-pdf";
+import axios from "axios";
 
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 const UploadDocument = ({ setAuth }) => {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [viewFiles, setViewFiles] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [numPages, setNumPages] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const url = "https://cors-anywhere.herokuapp.com/" + viewFiles[1]?.nama_file;
+  console.log(viewFiles);
+
+  const getFiles = async () => {
+    try {
+      const res = await axios(`${BASE_URL}/api/v1/docs/files`, {
+        method: "GET",
+        // headers: {
+        //   token: localStorage.token,
+        // },
+      });
+      setViewFiles(res.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getFiles();
+  }, []);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
   const logout = async (e) => {
     e.preventDefault();
     try {
@@ -27,6 +67,7 @@ const UploadDocument = ({ setAuth }) => {
       console.error(error.message);
     }
   };
+
   return (
     <Grid container component="main" sx={{ display: "flex", width: "100%" }}>
       <AppBar
@@ -73,7 +114,40 @@ const UploadDocument = ({ setAuth }) => {
             Upload File
           </Typography>
         </Breadcrumbs>
-        <Typography>Halaman upload dokumen</Typography>
+        <Grid container>
+          <Grid item lg={5} md={12}>
+            <Typography>Test1</Typography>
+          </Grid>
+          <Grid item lg={7} md={12}>
+            <Typography>Test2</Typography>
+          </Grid>
+        </Grid>
+        <Button
+          color="secondary"
+          disableElevation={true}
+          sx={{ marginBottom: 2 }}
+          onClick={() => setDialogOpen(true)}
+        >
+          view
+        </Button>
+        <Dialog
+          fullScreen={fullScreen}
+          fullWidth
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+        >
+          <Document
+            file={viewFiles[0]?.nama_file}
+            onLoadSuccess={onDocumentLoadSuccess}
+          >
+            <Box>
+              <Page pageNumber={pageNumber} />
+            </Box>
+            <Typography variant="subtitle2" align="center">
+              {numPages} Halaman
+            </Typography>
+          </Document>
+        </Dialog>
       </Box>
     </Grid>
   );
