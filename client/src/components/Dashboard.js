@@ -64,6 +64,8 @@ const Dashboard = (props) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageNumberHardcopy, setPageNumberHardcopy] = useState(1);
   const [fileName, setFileName] = useState(null);
+  const [query, setQuery] = useState("");
+  const [resultQuery, setResultQuery] = useState([]);
 
   const [inputData, setInputData] = useState({
     title: "",
@@ -72,6 +74,24 @@ const Dashboard = (props) => {
     position: "",
     info: "",
   });
+
+  console.log("QUERY: ", query);
+  console.log("HASIL: ", resultQuery);
+
+  const handleQuery = (e) => {
+    try {
+      setQuery(e.target.value);
+      setTimeout(async () => {
+        const result = await axios.get(
+          `${BASE_URL}/api/v1/docs/search/files?title=${query}`
+        );
+        const { data } = result;
+        setResultQuery(query === "" ? [] : data);
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const { title, type, pic, position, info } = inputData;
 
@@ -248,13 +268,18 @@ const Dashboard = (props) => {
             Upload File
           </Button>
         </Grid>
+        <TextField value={query} onChange={handleQuery} />
         <Dialog
           fullScreen={fullScreen}
           fullWidth
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
         >
-          <DialogTitle>Add New Document</DialogTitle>
+          <DialogTitle
+            sx={{ fontFamily: "Raleway", fontWeight: 700, textAlign: "center" }}
+          >
+            Add New Document
+          </DialogTitle>
           <Box component="form" padding={2} onSubmit={onSubmit}>
             <TextField
               required
@@ -485,7 +510,7 @@ const Dashboard = (props) => {
               </FormControl>
             )}
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label" color="secondary">
                 PIC Dokumen *
               </InputLabel>

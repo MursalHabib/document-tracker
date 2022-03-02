@@ -152,7 +152,12 @@ const Login = ({ setAuth }) => {
               height: 260,
             }}
           >
-            <Typography variant="h4" fontFamily={"Oswald"} color={"secondary"}>
+            <Typography
+              variant="h4"
+              fontFamily={"Raleway"}
+              fontWeight="700"
+              color={"secondary"}
+            >
               Login
             </Typography>
 

@@ -40,5 +40,8 @@ router.put("/update/:id", authorize, controller.updateDocument);
 router.delete("/delete/:id", authorize, controller.deleteDocument);
 router.post("/upload", upload.single("file"), controller.uploadFile);
 router.get("/files", controller.getAllFiles);
+router.get("/files/:id", controller.getOneFile);
+router.delete("/files/delete", controller.deleteFiles);
+router.get("/search/files", controller.searchFiles);
 
 module.exports = router;

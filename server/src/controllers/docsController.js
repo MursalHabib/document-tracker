@@ -60,7 +60,6 @@ module.exports = {
   uploadFile: async (req, res) => {
     const fileUrl =
       req.protocol + "://" + req.get("host") + "/uploads/" + req.file.filename;
-    console.log(fileUrl);
     try {
       const uploaded = await Files.create({
         title: req.body.title,
@@ -77,8 +76,46 @@ module.exports = {
   getAllFiles: async (req, res) => {
     try {
       const allFiles = await Files.findAll();
-      allFiles.forEach((e) => console.log(e.dataValues.nama_file));
       return res.json(allFiles);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "SERVER ERROR" });
+    }
+  },
+  getOneFile: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const singleFile = await Files.findByPk(id);
+      if (singleFile) {
+        res.send(singleFile);
+      } else {
+        res.status(404).send({
+          message: `Cannot find File with id=${id}.`,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "SERVER ERROR" });
+    }
+  },
+  deleteFiles: async (req, res) => {
+    const { id } = req.body;
+    try {
+      await Files.destroy({
+        where: { id },
+      });
+      return res.json({ message: "DATA BERHASIL DIHAPUS..." });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "SERVER ERROR" });
+    }
+  },
+  searchFiles: async (req, res) => {
+    const { title } = req.query;
+    try {
+      const condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+      const result = await Files.findAll({ where: condition });
+      res.send(result);
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "SERVER ERROR" });

@@ -185,7 +185,15 @@ export default function EnhancedTable({ testRefresh }) {
   ];
 
   return (
-    <Box>
+    <Box sx={{ padding: 1, backgroundColor: "white" }}>
+      <Typography
+        variant="h6"
+        fontFamily={"Raleway"}
+        fontWeight="700"
+        marginBottom={2}
+      >
+        List Tracking Dokumen
+      </Typography>
       <div style={{ width: "100%", backgroundColor: "white" }}>
         <DataGrid
           loading={loading}
