@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import {
   AppBar,
   Typography,
-  Divider,
   Box,
   Toolbar,
   List,
   ListItem,
   ListItemIcon,
+  ListItemButton,
   ListItemText,
   CssBaseline,
   IconButton,
-  InputBase,
   Button,
   Dialog,
   DialogTitle,
@@ -27,18 +26,22 @@ import {
   OutlinedInput,
   InputAdornment,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { styled, alpha } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LogoutIcon from "@mui/icons-material/Logout";
+import SearchIcon from "@mui/icons-material/Search";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import TableDocs from "../helper/Table";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/id";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -48,7 +51,6 @@ const Dashboard = (props) => {
   const theme = useTheme();
   const { window, setAuth } = props;
 
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [onRadio, setOnRadio] = useState("");
   const [submitted, setSubmitted] = useState({});
@@ -66,6 +68,8 @@ const Dashboard = (props) => {
   const [fileName, setFileName] = useState(null);
   const [query, setQuery] = useState("");
   const [resultQuery, setResultQuery] = useState([]);
+  const [loadingQuery, setLoadingQuery] = useState(false);
+  const [softcopyFile, setSoftcopyFile] = useState({});
 
   const [inputData, setInputData] = useState({
     title: "",
@@ -75,10 +79,8 @@ const Dashboard = (props) => {
     info: "",
   });
 
-  console.log("QUERY: ", query);
-  console.log("HASIL: ", resultQuery);
-
   const handleQuery = (e) => {
+    setLoadingQuery(true);
     try {
       setQuery(e.target.value);
       setTimeout(async () => {
@@ -86,9 +88,11 @@ const Dashboard = (props) => {
           `${BASE_URL}/api/v1/docs/search/files?title=${query}`
         );
         const { data } = result;
-        setResultQuery(query === "" ? [] : data);
+        setResultQuery(data);
+        setLoadingQuery(false);
       }, 1000);
     } catch (error) {
+      setLoadingQuery(false);
       console.error(error);
     }
   };
@@ -153,37 +157,10 @@ const Dashboard = (props) => {
   }
 
   const fileType = ["application/pdf"];
-  const handleSoftcopyChange = (e) => {
-    let selectedFile = e.target.files[0];
-    setFileName(selectedFile.name);
-    if (selectedFile) {
-      if (selectedFile && fileType.includes(selectedFile.type)) {
-        let reader = new FileReader();
-        reader.readAsDataURL(selectedFile);
-        reader.onloadend = (e) => {
-          setPdfFile(e.target.result);
-          setPdfFileError("");
-        };
-      } else {
-        setPdfFile(null);
-        setPdfFileError("Please select valid pdf file");
-      }
-    } else {
-      console.log("select your file");
-    }
-  };
-
-  const handleSoftcopySubmit = (e) => {
-    e.preventDefault();
-    if (pdfFile !== null) {
-      setViewPdf(pdfFile);
-    } else {
-      setViewPdf(null);
-    }
-  };
 
   const handleHardcopyChange = (e) => {
     let selectedFile = e.target.files[0];
+    setFileName(selectedFile.name);
     if (selectedFile) {
       if (selectedFile && fileType.includes(selectedFile.type)) {
         let reader = new FileReader();
@@ -209,6 +186,25 @@ const Dashboard = (props) => {
       setViewPdfHardcopy(null);
     }
   };
+
+  const handleQueryClick = async (e) => {
+    console.log(e.id);
+    setQuery("");
+    try {
+      const result = await axios.get(`${BASE_URL}/api/v1/docs/files/${e.id}`, {
+        // headers: {
+        //   token: localStorage.token,
+        // },
+      });
+      const { data } = result;
+      setSoftcopyFile(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  console.log(resultQuery);
 
   return (
     <Grid container component="main" sx={{ display: "flex", width: "100%" }}>
@@ -268,7 +264,7 @@ const Dashboard = (props) => {
             Upload File
           </Button>
         </Grid>
-        <TextField value={query} onChange={handleQuery} />
+
         <Dialog
           fullScreen={fullScreen}
           fullWidth
@@ -320,141 +316,149 @@ const Dashboard = (props) => {
                 <MenuItem value={"Lainnya"}>Lainnya</MenuItem>
               </Select>
             </FormControl>
-            <RadioGroup
-              onChange={(e) => setOnRadio(e.target.value)}
-              sx={{ display: type === "BAPP" ? "inline" : "none" }}
-            >
-              <FormControlLabel
-                value="Softcopy"
-                control={<Radio color="secondary" />}
-                label="Softcopy"
-              />
-              <FormControlLabel
-                value="Hardcopy"
-                control={<Radio color="secondary" />}
-                label="Hardcopy"
-              />
-            </RadioGroup>
-            <FormControl
-              fullWidth
+            <Box
+              // width={"80%"}
               sx={{
-                display:
-                  onRadio === "Softcopy" && type === "BAPP"
-                    ? "inline-block"
-                    : "none",
+                display: type === "BAPP" ? "flex" : "none",
+                flexDirection: "column",
+                marginTop: 2,
               }}
             >
+              <Typography>Cari dokumen softcopy</Typography>
+              <TextField
+                fullWidth
+                value={query}
+                onChange={handleQuery}
+                size="small"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {loadingQuery ? (
+                        <CircularProgress size={20} color="secondary" />
+                      ) : (
+                        <SearchIcon color="secondary" />
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <List
+                sx={{
+                  display: query === "" ? "none" : "inline",
+                  position: "absolute",
+                  marginTop: 8,
+                  backgroundColor: "white",
+                  width: "95%",
+                  zIndex: 111,
+                  border: "1px solid lightgray",
+                }}
+              >
+                {!resultQuery.length ? (
+                  <Typography
+                    variant="subtitle2"
+                    color={"text.secondary"}
+                    marginLeft={2}
+                  >
+                    no file found
+                  </Typography>
+                ) : (
+                  resultQuery
+                    .map((e, index) => (
+                      <ListItem
+                        disablePadding
+                        key={index}
+                        sx={{ backgroundColor: "white" }}
+                      >
+                        <ListItemButton
+                          onClick={() => handleQueryClick(e)}
+                          sx={{ padding: 0 }}
+                        >
+                          <ListItemText
+                            sx={{ paddingInline: 1 }}
+                            primary={e.title}
+                            secondary={
+                              <Typography
+                                sx={{ display: "inline" }}
+                                component="span"
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {moment(e.createdAt).format("Do MMM YY")}
+                              </Typography>
+                            }
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    ))
+                    .slice(0, 3)
+                )}
+              </List>
+              <Typography>Add File Hardcopy</Typography>
               <OutlinedInput
-                onChange={handleSoftcopyChange}
+                onChange={handleHardcopyChange}
                 type="file"
                 size="small"
                 placeholder="Please enter text"
                 endAdornment={
                   <InputAdornment position="end">
                     <Button
+                      disabled={pdfFileHardcopy === null ? true : false}
                       variant="contained"
-                      color="inherit"
+                      color="secondary"
                       size="small"
-                      type="submit"
-                      onClick={handleSoftcopySubmit}
+                      onClick={handleHardcopySubmit}
                     >
                       Upload
                     </Button>
                   </InputAdornment>
                 }
               />
-              <Box
+              <Grid
+                container
+                columnSpacing={4}
                 sx={{
-                  display: "flex",
+                  marginTop: 2,
                   justifyContent: "center",
-                  marginTop: 3,
+                  alignItems: "center",
                 }}
               >
-                <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
-                  <Box sx={{ border: "1px solid lightgray" }}>
-                    <Page scale={0.2} pageNumber={pageNumber} />
-                  </Box>
-                  <Typography variant="subtitle2" align="center">
-                    {numPages} Halaman
-                  </Typography>
-                </Document>
-              </Box>
-            </FormControl>
-            <FormControl
-              fullWidth
-              size="small"
-              variant="outlined"
-              sx={{
-                display:
-                  onRadio === "Hardcopy" && type === "BAPP" ? "flex" : "none",
-              }}
-            >
-              <Typography variant="subtitle1">Dokumen Softcopy:</Typography>
-              <Typography variant="subtitle2">{fileName}</Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  marginTop: 3,
-                }}
-              >
-                <Document file={viewPdf} onLoadSuccess={onDocumentLoadSuccess}>
-                  <Box sx={{ border: "1px solid lightgray" }}>
-                    <Page scale={0.2} pageNumber={pageNumber} />
-                  </Box>
-                  <Typography variant="subtitle2" align="center">
-                    {numPages} Halaman
-                  </Typography>
-                </Document>
-              </Box>
-              {/* <InputLabel htmlFor="outlined-adornment-password">
-                Cari Dokumen Softcopy
-              </InputLabel> */}
-              {/* <OutlinedInput
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton>
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Cari Dokumen Softcopy"
-              /> */}
-            </FormControl>
-            {viewPdf !== null && (
-              <FormControl
-                margin="dense"
-                fullWidth
-                sx={{
-                  display:
-                    onRadio === "Hardcopy" && type === "BAPP"
-                      ? "inline-block"
-                      : "none",
-                }}
-              >
-                <Typography variant="h7">Attach File Hardcopy</Typography>
-                <OutlinedInput
-                  onChange={handleHardcopyChange}
-                  type="file"
-                  size="small"
-                  placeholder="Please enter text"
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <Button
-                        variant="contained"
-                        color="inherit"
-                        size="small"
-                        onClick={handleHardcopySubmit}
-                      >
-                        Upload
-                      </Button>
-                    </InputAdornment>
-                  }
-                />
-                <Box
+                <Grid
+                  item
+                  lg={6}
                   sx={{
                     display: "flex",
-                    marginTop: 3,
-                    justifyContent: "flex-start",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Document
+                    file={softcopyFile.nama_file}
+                    onLoadSuccess={onDocumentLoadSuccess}
+                  >
+                    <Typography variant="subtitle2" align="center">
+                      {softcopyFile.title?.length > 25
+                        ? softcopyFile.title?.slice(0, 25) + "...pdf"
+                        : softcopyFile.title}
+                    </Typography>
+                    <Box
+                      sx={{
+                        border: "1px solid lightgray",
+                      }}
+                    >
+                      <Page scale={0.3} pageNumber={pageNumber} />
+                    </Box>
+
+                    <Typography variant="subtitle2" align="center">
+                      {numPages} Halaman
+                    </Typography>
+                  </Document>
+                </Grid>
+                <Grid
+                  item
+                  lg={6}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
                     alignItems: "center",
                   }}
                 >
@@ -462,53 +466,63 @@ const Dashboard = (props) => {
                     file={viewPdfHardcopy}
                     onLoadSuccess={onDocumentLoadSuccessHardcopy}
                   >
-                    <Box sx={{ border: "1px solid lightgray" }}>
-                      <Page scale={0.2} pageNumber={pageNumberHardcopy} />
+                    <Typography variant="subtitle2" align="center">
+                      {fileName?.length > 20
+                        ? fileName?.slice(0, 20) + "...pdf"
+                        : fileName}
+                    </Typography>
+                    <Box
+                      sx={{
+                        border: "1px solid lightgray",
+                      }}
+                    >
+                      <Page
+                        scale={0.3}
+                        pageNumber={pageNumberHardcopy}
+                        // onClick={() => console.log("click")}
+                      />
                     </Box>
+
                     <Typography variant="subtitle2" align="center">
                       {numPagesHardcopy} Halaman
                     </Typography>
                   </Document>
-                  {isLoading === false &&
-                    numPages !== null &&
-                    numPagesHardcopy !== null &&
-                    (numPages === numPagesHardcopy ? (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginLeft: 10,
-                        }}
-                      >
-                        <CheckCircleIcon
-                          sx={{ fontSize: 70 }}
-                          color={"success"}
-                        />
-                        <Typography color={"success"}>
-                          Jumlah halaman sesuai
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginLeft: 10,
-                        }}
-                      >
-                        <CancelIcon sx={{ fontSize: 70 }} color={"error"} />
-                        <Typography color={"error"}>
-                          Jumlah halaman tidak sesuai
-                        </Typography>
-                      </Box>
-                    ))}
+                </Grid>
+              </Grid>
+            </Box>
+
+            {isLoading === false &&
+              numPages !== null &&
+              numPagesHardcopy !== null &&
+              (numPages === numPagesHardcopy ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 3,
+                  }}
+                >
+                  <CheckCircleIcon color={"success"} sx={{ marginRight: 1 }} />
+                  <Typography color={"text.success"}>
+                    Jumlah halaman sesuai
+                  </Typography>
                 </Box>
-              </FormControl>
-            )}
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 3,
+                  }}
+                >
+                  <CancelIcon color={"error"} sx={{ marginRight: 1 }} />
+                  <Typography color={"error"}>
+                    Jumlah halaman tidak sesuai
+                  </Typography>
+                </Box>
+              ))}
 
             <FormControl fullWidth margin="dense">
               <InputLabel id="demo-simple-select-label" color="secondary">

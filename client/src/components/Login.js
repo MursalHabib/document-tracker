@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Typography,
   TextField,
-  Container,
   Box,
-  Card,
   Button,
-  FormControlLabel,
   Grid,
   InputAdornment,
-  CircularProgress,
   IconButton,
 } from "@mui/material";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";

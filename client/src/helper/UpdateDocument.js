@@ -3,7 +3,7 @@ import jwt_decode from "jwt-decode";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 const UpdateDocument = ({ setAuth }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;

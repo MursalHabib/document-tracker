@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import { alpha } from "@mui/material/styles";
-import { visuallyHidden } from "@mui/utils";
+// import PropTypes from "prop-types";
+// import { alpha } from "@mui/material/styles";
+// import { visuallyHidden } from "@mui/utils";
 import axios from "axios";
 import {
   Button,
@@ -16,16 +16,9 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
   TableRow,
-  TableSortLabel,
-  Toolbar,
   Typography,
-  Paper,
   IconButton,
-  Chip,
   Grid,
   useMediaQuery,
   Tooltip,
@@ -40,20 +33,13 @@ import { DataGrid } from "@mui/x-data-grid";
 
 export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-  const BASE_URL_CLIENT = process.env.REACT_APP_BASE_URL_CLIENT;
 
   const [loading, setLoading] = useState(false);
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("calories");
-  const [selected, setSelected] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [tableContent, setTableContent] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogQROpen, setDialogQROpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
-  const [query, setQuery] = useState("");
   const theme = useTheme();
   const componentRef = useRef();
 

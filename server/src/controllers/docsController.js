@@ -12,7 +12,7 @@ module.exports = {
         position,
         info,
       });
-      return res.json({ message: "Document Created...", document });
+      return res.status(201).json({ message: "Document Created...", document });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
