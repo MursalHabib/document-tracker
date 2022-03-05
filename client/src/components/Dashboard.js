@@ -20,8 +20,7 @@ import {
   Select,
   MenuItem,
   Grid,
-  Radio,
-  RadioGroup,
+  Stack,
   FormControlLabel,
   OutlinedInput,
   InputAdornment,
@@ -42,6 +41,7 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import "moment/locale/id";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { LoadingButton } from "@mui/lab";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
@@ -52,14 +52,13 @@ const Dashboard = (props) => {
   const { window, setAuth } = props;
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [onRadio, setOnRadio] = useState("");
   const [submitted, setSubmitted] = useState({});
   const [refresh, setRefresh] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [pdfFile, setPdfFile] = useState(null);
   const [pdfFileHardcopy, setPdfFileHardcopy] = useState(null);
   const [pdfFileError, setPdfFileError] = useState("");
-  const [viewPdf, setViewPdf] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [viewPdfHardcopy, setViewPdfHardcopy] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [numPagesHardcopy, setNumPagesHardcopy] = useState(null);
@@ -115,9 +114,11 @@ const Dashboard = (props) => {
     setInputData({ ...inputData, [e.target.name]: e.target.value });
 
   const onSubmit = async (e) => {
+    const status = "on progress";
     e.preventDefault();
+    setLoading(true);
     try {
-      const body = { title, type, pic, position, info };
+      const body = { title, type, pic, position, info, status };
       const response = await axios.post(
         `${BASE_URL}/api/v1/docs/create`,
         body,
@@ -127,7 +128,9 @@ const Dashboard = (props) => {
           },
         }
       );
+      console.log(response);
       setDialogOpen(false);
+      setLoading(false);
       setRefresh((old) => old + 1);
       setSubmitted(body);
       toast.success("Dokumen berhasil dibuat", {
@@ -139,7 +142,16 @@ const Dashboard = (props) => {
         draggable: true,
       });
     } catch (error) {
+      setLoading(false);
       console.log(error);
+      toast.error("Terjadi kesalahan, silahkan coba lagi", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -583,27 +595,34 @@ const Dashboard = (props) => {
               value={info}
               onChange={onChange}
             />
-            <Button
-              disabled={
-                type === "BAPP" && numPages !== numPagesHardcopy ? true : false
-              }
-              type="submit"
-              // fullWidth
-              variant="outlined"
-              color="secondary"
-              sx={{ mt: 3, mb: 2 }}
+            <Stack
+              spacing={2}
+              direction="row"
+              sx={{ mt: 3, justifyContent: "flex-start" }}
             >
-              Create Document
-            </Button>
-            <Button
-              onClick={() => setDialogOpen(false)}
-              color="inherit"
-              // fullWidth
-              variant="text"
-              sx={{ mt: 3, mb: 2, ml: 2 }}
-            >
-              Cancel
-            </Button>
+              <LoadingButton
+                disabled={
+                  type === "BAPP" && numPages !== numPagesHardcopy
+                    ? true
+                    : false
+                }
+                type="submit"
+                loading={loading}
+                color="secondary"
+                variant="contained"
+              >
+                Create Document
+              </LoadingButton>
+              <Button
+                onClick={() => setDialogOpen(false)}
+                color="inherit"
+                // fullWidth
+                variant="text"
+                sx={{ mt: 3, mb: 2, ml: 2 }}
+              >
+                Cancel
+              </Button>
+            </Stack>
           </Box>
         </Dialog>
         <Grid item xs={12}>

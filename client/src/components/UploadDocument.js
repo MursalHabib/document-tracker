@@ -113,18 +113,20 @@ const UploadDocument = ({ setAuth }) => {
   const columns = [
     {
       field: "id",
-      headerName: "No",
+      headerName: "No.",
       maxWidth: 50,
+      align: "center",
+      type: "number",
     },
     {
       field: "title",
       headerName: "Nama File",
-      width: 400,
+      flex: 2,
     },
     {
       field: "files",
-      headerName: "File",
-      width: 150,
+      headerName: "Aksi",
+      flex: 1,
       renderCell: renderDetailsButton,
     },
   ];
@@ -234,7 +236,7 @@ const UploadDocument = ({ setAuth }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          mx: fullScreen ? 0 : 5,
+          mx: fullScreen ? 0 : 10,
           // width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
@@ -344,6 +346,7 @@ const UploadDocument = ({ setAuth }) => {
 
               <div style={{ width: "100%" }}>
                 <DataGrid
+                  loading={isLoading}
                   autoHeight={true}
                   rows={viewFiles}
                   columns={columns}
@@ -354,6 +357,11 @@ const UploadDocument = ({ setAuth }) => {
                   disableSelectionOnClick={true}
                   onSelectionModelChange={(newSelection) => {
                     setSelected(newSelection);
+                  }}
+                  initialState={{
+                    sorting: {
+                      sortModel: [{ field: "id", sort: "asc" }],
+                    },
                   }}
                 />
               </div>

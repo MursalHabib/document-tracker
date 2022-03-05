@@ -22,24 +22,32 @@ import {
   Grid,
   useMediaQuery,
   Tooltip,
+  Stack,
+  Chip,
+  DialogActions,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CheckIcon from "@mui/icons-material/Check";
 import QRCode from "react-qr-code";
 import { useTheme } from "@mui/material/styles";
 import ReactToPrint from "react-to-print";
 import { toast } from "react-toastify";
 import { DataGrid } from "@mui/x-data-grid";
+import { LoadingButton } from "@mui/lab";
 
 export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [tableContent, setTableContent] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogQROpen, setDialogQROpen] = useState(false);
   const [dataDetail, setDataDetail] = useState({});
   const [dataChange, setDataChange] = useState(0);
+  const [confirmDialog, setConfirmDialog] = useState(false);
   const theme = useTheme();
   const componentRef = useRef();
 
@@ -52,6 +60,7 @@ export default function EnhancedTable({ testRefresh }) {
   const { id, title, type, pic, position, info } = dataDetail;
 
   const onSubmit = async (e) => {
+    setUpdateLoading(true);
     e.preventDefault();
     try {
       const body = { id, title, type, pic, position, info };
@@ -62,6 +71,7 @@ export default function EnhancedTable({ testRefresh }) {
       });
       setDialogOpen(false);
       setDataChange((old) => old + 1);
+      setUpdateLoading(false);
       toast.success("Berhasil update dokumen", {
         position: "top-center",
         autoClose: 3000,
@@ -71,6 +81,7 @@ export default function EnhancedTable({ testRefresh }) {
         draggable: true,
       });
     } catch (error) {
+      setUpdateLoading(false);
       console.log(error);
       toast.error("Uh oh ada kesalahan di server :(", {
         position: "top-center",
@@ -142,33 +153,80 @@ export default function EnhancedTable({ testRefresh }) {
   };
 
   const columns = [
-    { field: "id", headerName: "No.", width: 70, type: "number" },
-    { field: "title", headerName: "Judul Dokumen", width: 300 },
-    { field: "type", headerName: "Tipe Dokumen", width: 130 },
+    {
+      field: "id",
+      headerName: "No.",
+      type: "number",
+      width: 50,
+      align: "center",
+    },
+    { field: "title", headerName: "Judul Dokumen", flex: 2 },
+    { field: "type", headerName: "Tipe Dokumen", flex: 1 },
     {
       field: "pic",
       headerName: "PIC",
-      width: 150,
+      flex: 1,
     },
     {
       field: "position",
       headerName: "Posisi Dokumen",
-      width: 250,
+      flex: 1,
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
     },
     {
       field: "info",
       headerName: "Keterangan",
-      width: 200,
+      flex: 2,
     },
     {
       field: "aksi",
       headerName: "Aksi",
-      width: 100,
+      flex: 1,
       sortable: false,
       renderCell: renderDetailsButton,
       disableClickEventBubbling: true,
     },
   ];
+
+  const handleCloseDocument = async (e) => {
+    setUpdateLoading(true);
+    e.preventDefault();
+    try {
+      const body = { id, status: "closed" };
+      await axios.put(`${BASE_URL}/api/v1/docs/update/${body.id}`, body, {
+        headers: {
+          token: localStorage.token,
+        },
+      });
+      setDataChange((old) => old + 1);
+      setUpdateLoading(false);
+      setConfirmDialog(false);
+      setDialogOpen(false);
+      toast.success("Berhasil close document", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch (error) {
+      setUpdateLoading(false);
+      toast.error("Terjadi kesalahan, coba lagi nanti", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      console.log(error);
+    }
+  };
 
   return (
     <Box sx={{ padding: 1, backgroundColor: "white" }}>
@@ -189,6 +247,11 @@ export default function EnhancedTable({ testRefresh }) {
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
+          initialState={{
+            sorting: {
+              sortModel: [{ field: "id", sort: "asc" }],
+            },
+          }}
         />
       </div>
 
@@ -199,10 +262,15 @@ export default function EnhancedTable({ testRefresh }) {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
       >
-        <DialogTitle>Edit Document</DialogTitle>
+        <DialogTitle
+          sx={{ fontFamily: "Raleway", fontWeight: 700, textAlign: "center" }}
+        >
+          Edit Document
+        </DialogTitle>
         <Box component="form" padding={2} onSubmit={onSubmit}>
           <TextField
-            margin="normal"
+            color="secondary"
+            margin="dense"
             id="name"
             label="Judul Dokumen"
             type="text"
@@ -212,7 +280,7 @@ export default function EnhancedTable({ testRefresh }) {
             value={dataDetail.title}
             onChange={onChange}
           />
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="dense" color="secondary">
             <InputLabel id="demo-simple-select-label">Jenis Dokumen</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -234,7 +302,7 @@ export default function EnhancedTable({ testRefresh }) {
               <MenuItem value={"Lainnya"}>Lainnya</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="dense" color="secondary">
             <InputLabel id="demo-simple-select-label">PIC Dokumen</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -248,7 +316,7 @@ export default function EnhancedTable({ testRefresh }) {
               <MenuItem value={"Rudy"}>Rudy</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="dense" color="secondary">
             <InputLabel id="demo-simple-select-label">
               Posisi Dokumen
             </InputLabel>
@@ -274,7 +342,8 @@ export default function EnhancedTable({ testRefresh }) {
             </Select>
           </FormControl>
           <TextField
-            margin="normal"
+            color="secondary"
+            margin="dense"
             id="name"
             label="Keterangan"
             type="text"
@@ -284,31 +353,96 @@ export default function EnhancedTable({ testRefresh }) {
             value={dataDetail.info}
             onChange={onChange}
           />
-          <Button
-            type="submit"
-            variant="outlined"
-            color="secondary"
-            sx={{ mt: 3, mb: 2 }}
+          <Stack
+            spacing={1}
+            direction="row"
+            sx={{ mt: 1, justifyContent: "flex-start", alignItems: "center" }}
           >
-            Update Document
-          </Button>
-          <Button
-            onClick={() => setDialogOpen(false)}
-            color="inherit"
-            // fullWidth
-            variant="text"
-            sx={{ mt: 3, mb: 2, ml: 2 }}
+            {/* <Typography>Status: </Typography> */}
+            <Chip
+              color={
+                dataDetail.status === "on progress" ? "default" : "success"
+              }
+              size="small"
+              icon={
+                dataDetail.status === "on progress" ? (
+                  <AccessTimeIcon />
+                ) : (
+                  <CheckIcon />
+                )
+              }
+              label={
+                dataDetail.status === "on progress" ? "on progress" : "closed"
+              }
+            />
+            <Button
+              onClick={() => setConfirmDialog(true)}
+              disabled={dataDetail.status === "on progress" ? false : true}
+              size="small"
+              color="error"
+            >
+              {dataDetail.status === "on progress"
+                ? "close this document"
+                : "closed by admin"}
+            </Button>
+          </Stack>
+
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{ mt: 3, justifyContent: "flex-start" }}
           >
-            Cancel
-          </Button>
+            <LoadingButton
+              type="submit"
+              loading={updateLoading}
+              color="secondary"
+              variant="contained"
+            >
+              Update Document
+            </LoadingButton>
+            <Button
+              onClick={() => setDialogOpen(false)}
+              color="inherit"
+              // fullWidth
+              variant="text"
+              sx={{ mt: 3, mb: 2, ml: 2 }}
+            >
+              Cancel
+            </Button>
+          </Stack>
         </Box>
+      </Dialog>
+      <Dialog
+        // fullWidth
+        open={confirmDialog}
+        onClose={() => setDialogQROpen(false)}
+      >
+        <DialogTitle sx={{ fontFamily: "Raleway", fontWeight: 700 }}>
+          Close this document?
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            size="small"
+            color="inherit"
+            onClick={() => setConfirmDialog(false)}
+          >
+            cancel
+          </Button>
+          <Button size="small" color="error" onClick={handleCloseDocument}>
+            close
+          </Button>
+        </DialogActions>
       </Dialog>
       <Dialog
         fullWidth
         open={dialogQROpen}
         onClose={() => setDialogQROpen(false)}
       >
-        <DialogTitle sx={{ textAlign: "center" }}>QR Code Document</DialogTitle>
+        <DialogTitle
+          sx={{ fontFamily: "Raleway", fontWeight: 700, textAlign: "center" }}
+        >
+          QR Code Document
+        </DialogTitle>
         <Box padding={2}>
           <Grid
             sx={{

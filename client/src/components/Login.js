@@ -4,7 +4,6 @@ import {
   Typography,
   TextField,
   Box,
-  Button,
   Grid,
   InputAdornment,
   IconButton,
@@ -15,6 +14,7 @@ import { toast } from "react-toastify";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { LoadingButton } from "@mui/lab";
 
 const Login = ({ setAuth }) => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -151,7 +151,7 @@ const Login = ({ setAuth }) => {
             <Typography
               variant="h4"
               fontFamily={"Raleway"}
-              fontWeight="700"
+              fontWeight="900"
               color={"secondary"}
             >
               Login
@@ -207,29 +207,17 @@ const Login = ({ setAuth }) => {
                   ),
                 }}
               />
-              {isLoading ? (
-                <Button
-                  disabled
-                  color="secondary"
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Loading...
-                </Button>
-              ) : (
-                <Button
-                  color="secondary"
-                  disabled={!email.length || !password.length ? true : false}
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Login
-                </Button>
-              )}
+              <LoadingButton
+                sx={{ mt: 3, mb: 2 }}
+                disabled={!email.length || !password.length ? true : false}
+                type="submit"
+                fullWidth
+                loading={isLoading}
+                color="secondary"
+                variant="contained"
+              >
+                login
+              </LoadingButton>
             </Box>
           </Box>
         </Grid>

@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 
 module.exports = {
   createDocument: async (req, res) => {
-    const { title, type, pic, position, info } = req.body;
+    const { title, type, pic, position, info, status } = req.body;
     try {
       const document = await Documents.create({
         title,
@@ -11,6 +11,7 @@ module.exports = {
         pic,
         position,
         info,
+        status,
       });
       return res.status(201).json({ message: "Document Created...", document });
     } catch (error) {
@@ -28,11 +29,11 @@ module.exports = {
   },
 
   updateDocument: async (req, res) => {
-    const { title, pic, position, type, info } = req.body;
+    const { title, pic, position, type, info, status } = req.body;
     const id = req.params.id;
     try {
       await Documents.update(
-        { title, type, pic, position, info },
+        { title, type, pic, position, info, status },
         { where: { id } }
       );
       return res.json({ message: "DATA BERHASIL DIUPDATE..." });
