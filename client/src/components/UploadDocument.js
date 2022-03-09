@@ -57,7 +57,7 @@ const UploadDocument = ({ setAuth }) => {
   const getFiles = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/api/v1/docs/files`, {
+      const res = await axios.get(`/docs/files`, {
         // headers: {
         //   token: localStorage.token,
         // },
@@ -138,7 +138,7 @@ const UploadDocument = ({ setAuth }) => {
     formData.append("title", title);
     formData.append("file", file);
     try {
-      await axios.post(`${BASE_URL}/api/v1/docs/upload`, formData, {
+      await axios.post(`/docs/upload`, formData, {
         headers: {
           token: localStorage.token,
           "content-type": "multipart/form-data",
@@ -174,7 +174,7 @@ const UploadDocument = ({ setAuth }) => {
     e.preventDefault();
     const body = { id: selected };
     try {
-      await axios.delete(`${BASE_URL}/api/v1/docs/files/delete`, {
+      await axios.delete(`/docs/files/delete`, {
         headers: {
           token: localStorage.token,
         },

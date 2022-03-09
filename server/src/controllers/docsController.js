@@ -24,6 +24,7 @@ module.exports = {
       const documents = await Documents.findAll();
       return res.json(documents);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: error.message });
     }
   },

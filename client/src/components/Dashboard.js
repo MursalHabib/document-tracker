@@ -83,9 +83,7 @@ const Dashboard = (props) => {
     try {
       setQuery(e.target.value);
       setTimeout(async () => {
-        const result = await axios.get(
-          `${BASE_URL}/api/v1/docs/search/files?title=${query}`
-        );
+        const result = await axios.get(`/docs/search/files?title=${query}`);
         const { data } = result;
         setResultQuery(data);
         setLoadingQuery(false);
@@ -119,15 +117,11 @@ const Dashboard = (props) => {
     setLoading(true);
     try {
       const body = { title, type, pic, position, info, status };
-      const response = await axios.post(
-        `${BASE_URL}/api/v1/docs/create`,
-        body,
-        {
-          headers: {
-            token: localStorage.token,
-          },
-        }
-      );
+      const response = await axios.post(`/docs/create`, body, {
+        headers: {
+          token: localStorage.token,
+        },
+      });
       console.log(response);
       setDialogOpen(false);
       setLoading(false);
@@ -203,7 +197,7 @@ const Dashboard = (props) => {
     console.log(e.id);
     setQuery("");
     try {
-      const result = await axios.get(`${BASE_URL}/api/v1/docs/files/${e.id}`, {
+      const result = await axios.get(`/docs/files/${e.id}`, {
         // headers: {
         //   token: localStorage.token,
         // },
@@ -251,7 +245,7 @@ const Dashboard = (props) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          mx: fullScreen ? 0 : 5,
+          mx: fullScreen ? 0 : 10,
           // width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
@@ -333,10 +327,9 @@ const Dashboard = (props) => {
               sx={{
                 display: type === "BAPP" ? "flex" : "none",
                 flexDirection: "column",
-                marginTop: 2,
               }}
             >
-              <Typography>Cari dokumen softcopy</Typography>
+              <Typography marginTop={1}>Cari dokumen softcopy</Typography>
               <TextField
                 fullWidth
                 value={query}
@@ -405,7 +398,7 @@ const Dashboard = (props) => {
                     .slice(0, 3)
                 )}
               </List>
-              <Typography>Add File Hardcopy</Typography>
+              <Typography marginTop={1}>Add File Hardcopy</Typography>
               <OutlinedInput
                 onChange={handleHardcopyChange}
                 type="file"

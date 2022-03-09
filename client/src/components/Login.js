@@ -45,7 +45,7 @@ const Login = ({ setAuth }) => {
           : email === EGM
           ? "Executive General Manager"
           : null;
-      const response = await axios.post(`${BASE_URL}/api/v1/auth/login`, body);
+      const response = await axios.post("auth/login", body);
       const { token } = response.data;
 
       if (token) {

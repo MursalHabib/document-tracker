@@ -36,6 +36,8 @@ import ReactToPrint from "react-to-print";
 import { toast } from "react-toastify";
 import { DataGrid } from "@mui/x-data-grid";
 import { LoadingButton } from "@mui/lab";
+import moment from "moment";
+import "moment/locale/id";
 
 export default function EnhancedTable({ testRefresh }) {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -64,7 +66,7 @@ export default function EnhancedTable({ testRefresh }) {
     e.preventDefault();
     try {
       const body = { id, title, type, pic, position, info };
-      await axios.put(`${BASE_URL}/api/v1/docs/update/${body.id}`, body, {
+      await axios.put(`/docs/update/${body.id}`, body, {
         headers: {
           token: localStorage.token,
         },
@@ -109,7 +111,7 @@ export default function EnhancedTable({ testRefresh }) {
   const getData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${BASE_URL}/api/v1/docs/documents`, {
+      const res = await axios.get(`/docs/documents`, {
         headers: {
           token: localStorage.token,
         },
@@ -180,7 +182,7 @@ export default function EnhancedTable({ testRefresh }) {
     {
       field: "info",
       headerName: "Keterangan",
-      flex: 2,
+      flex: 1,
     },
     {
       field: "aksi",
@@ -197,7 +199,7 @@ export default function EnhancedTable({ testRefresh }) {
     e.preventDefault();
     try {
       const body = { id, status: "closed" };
-      await axios.put(`${BASE_URL}/api/v1/docs/update/${body.id}`, body, {
+      await axios.put(`/docs/update/${body.id}`, body, {
         headers: {
           token: localStorage.token,
         },
@@ -265,10 +267,11 @@ export default function EnhancedTable({ testRefresh }) {
         <DialogTitle
           sx={{ fontFamily: "Raleway", fontWeight: 700, textAlign: "center" }}
         >
-          Edit Document
+          {dataDetail.status === "closed" ? "Document Closed" : "Edit Document"}
         </DialogTitle>
         <Box component="form" padding={2} onSubmit={onSubmit}>
           <TextField
+            disabled={dataDetail.status === "closed" ? true : false}
             color="secondary"
             margin="dense"
             id="name"
@@ -280,31 +283,50 @@ export default function EnhancedTable({ testRefresh }) {
             value={dataDetail.title}
             onChange={onChange}
           />
-          <FormControl fullWidth margin="dense" color="secondary">
-            <InputLabel id="demo-simple-select-label">Jenis Dokumen</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="type"
-              value={dataDetail.type}
-              label="Jenis Dokumen"
-              onChange={onChange}
+          <Stack
+            spacing={2}
+            direction="row"
+            sx={{ justifyContent: "flex-start", alignItems: "center" }}
+          >
+            <FormControl
+              fullWidth
+              margin="dense"
+              color="secondary"
+              sx={{ flex: 6 }}
             >
-              <MenuItem value={"Pengadaan"}>Pengadaan</MenuItem>
-              <MenuItem value={"Kontrak"}>Kontrak</MenuItem>
-              <MenuItem value={"SP"}>SP</MenuItem>
-              <MenuItem value={"Amandemen & Side Letter"}>
-                Amandemen & Side Letter
-              </MenuItem>
-              <MenuItem value={"BAPP"}>BAPP</MenuItem>
-              <MenuItem value={"Invoice"}>Invoice</MenuItem>
-              <MenuItem value={"Nota Pesanan"}>Nota Pesanan</MenuItem>
-              <MenuItem value={"Lainnya"}>Lainnya</MenuItem>
-            </Select>
-          </FormControl>
+              <InputLabel id="demo-simple-select-label">
+                Jenis Dokumen
+              </InputLabel>
+              <Select
+                disabled={dataDetail.status === "closed" ? true : false}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="type"
+                value={dataDetail.type}
+                label="Jenis Dokumen"
+                onChange={onChange}
+              >
+                <MenuItem value={"Pengadaan"}>Pengadaan</MenuItem>
+                <MenuItem value={"Kontrak"}>Kontrak</MenuItem>
+                <MenuItem value={"SP"}>SP</MenuItem>
+                <MenuItem value={"Amandemen & Side Letter"}>
+                  Amandemen & Side Letter
+                </MenuItem>
+                <MenuItem value={"BAPP"}>BAPP</MenuItem>
+                <MenuItem value={"Invoice"}>Invoice</MenuItem>
+                <MenuItem value={"Nota Pesanan"}>Nota Pesanan</MenuItem>
+                <MenuItem value={"Lainnya"}>Lainnya</MenuItem>
+              </Select>
+            </FormControl>
+            <Typography sx={{ flex: 6 }}>
+              Tanggal dibuat:{" "}
+              {moment(dataDetail.createdAt).format("Do MMMM YYYY")}
+            </Typography>
+          </Stack>
           <FormControl fullWidth margin="dense" color="secondary">
             <InputLabel id="demo-simple-select-label">PIC Dokumen</InputLabel>
             <Select
+              disabled={dataDetail.status === "closed" ? true : false}
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={dataDetail.pic}
@@ -321,6 +343,7 @@ export default function EnhancedTable({ testRefresh }) {
               Posisi Dokumen
             </InputLabel>
             <Select
+              disabled={dataDetail.status === "closed" ? true : false}
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={dataDetail.position}
@@ -342,6 +365,7 @@ export default function EnhancedTable({ testRefresh }) {
             </Select>
           </FormControl>
           <TextField
+            disabled={dataDetail.status === "closed" ? true : false}
             color="secondary"
             margin="dense"
             id="name"
@@ -393,6 +417,7 @@ export default function EnhancedTable({ testRefresh }) {
             sx={{ mt: 3, justifyContent: "flex-start" }}
           >
             <LoadingButton
+              disabled={dataDetail.status === "closed" ? true : false}
               type="submit"
               loading={updateLoading}
               color="secondary"
@@ -415,7 +440,7 @@ export default function EnhancedTable({ testRefresh }) {
       <Dialog
         // fullWidth
         open={confirmDialog}
-        onClose={() => setDialogQROpen(false)}
+        onClose={() => setConfirmDialog(false)}
       >
         <DialogTitle sx={{ fontFamily: "Raleway", fontWeight: 700 }}>
           Close this document?
@@ -489,7 +514,6 @@ export default function EnhancedTable({ testRefresh }) {
           </Grid>
           <Grid sx={{ textAlign: "center" }}>
             <ReactToPrint
-              pageStyle={{ alignItems: "center" }}
               documentTitle={dataDetail.title}
               trigger={() => <Button color="secondary">Print</Button>}
               content={() => componentRef.current}
