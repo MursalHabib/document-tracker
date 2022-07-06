@@ -87,7 +87,7 @@ const Dashboard = (props) => {
         const { data } = result;
         setResultQuery(data);
         setLoadingQuery(false);
-      }, 1000);
+      }, 500);
     } catch (error) {
       setLoadingQuery(false);
       console.error(error);
@@ -209,8 +209,6 @@ const Dashboard = (props) => {
       console.log(error.message);
     }
   };
-
-  console.log(resultQuery);
 
   return (
     <Grid container component="main" sx={{ display: "flex", width: "100%" }}>
@@ -349,7 +347,7 @@ const Dashboard = (props) => {
               />
               <List
                 sx={{
-                  display: query === "" ? "none" : "inline",
+                  display: query === "" || loadingQuery ? "none" : "inline",
                   position: "absolute",
                   marginTop: 8,
                   backgroundColor: "white",

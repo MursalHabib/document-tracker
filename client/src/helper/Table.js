@@ -141,7 +141,7 @@ export default function EnhancedTable({ testRefresh }) {
             <QrCodeRoundedIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Edit Document">
+        <Tooltip title="Edit Document" sx={{ display: "inline" }}>
           <IconButton
             color="primary"
             aria-label="edit"
