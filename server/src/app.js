@@ -20,6 +20,14 @@ app.use("/api/v1/docs/", require("./routes/document"));
 
 app.listen(PORT, async () => {
   console.log(`RUNNING ON PORT ${PORT}`);
-  await sequelize.sync({ force: false });
-  console.log("DATABASE SYNCED...");
+  try {
+    if (process.env.NODE_ENV === "production") {
+      await sequelize.sync({ force: false });
+      console.log("DATABASE SYNCED...");
+      // process.exit(0);
+    }
+    console.log("DEVELOPMENT ENV");
+  } catch (error) {
+    console.log("PESAN ERROR: ", error);
+  }
 });
